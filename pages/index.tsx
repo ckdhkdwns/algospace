@@ -114,10 +114,7 @@
               <BtnTitle>Sorting</BtnTitle>
               <BtnSubtitle>Sort various values</BtnSubtitle>
             </TitleWrapper>
-            
           </AVLBtn>
-          
-          
         </Body>
       </Wrapper>
     )
