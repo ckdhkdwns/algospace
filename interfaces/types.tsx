@@ -1,7 +1,7 @@
 export type Node = {
   value: number;
   
-  parentNode: Node | null;
+  parentNode: number;
   leftNode: number | null;
   rightNode: number | null;
 
