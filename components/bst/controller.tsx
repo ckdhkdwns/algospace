@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import Image from "next/image";
 import { Slider } from "@mui/material";
-import { Ref, useEffect } from "react";
+import { Ref, useEffect, useState, useRef } from "react";
 import { CgRedo } from "react-icons/cg";
 import { GoCheck } from "react-icons/go";
 const Form = styled.div`
@@ -173,7 +173,7 @@ type BSTControllerProps = {
   isAnimationActive: Boolean;
   setIsAnimationActive: Function;
   isAnimating: Boolean;
-  onExport: Function;
+  setIsModalOpen: Function
 };
 
 export default function BSTController({
@@ -185,7 +185,7 @@ export default function BSTController({
   isAnimationActive,
   setIsAnimationActive,
   isAnimating,
-  onExport
+  setIsModalOpen
 }: BSTControllerProps) {
 
   useEffect(() => {
@@ -248,7 +248,7 @@ export default function BSTController({
 
       <Footer>
         <Divider />
-        <ExportButton onClick={() => onExport()}>Export</ExportButton>
+        <ExportButton onClick={() => setIsModalOpen(true)}>Export</ExportButton>
         <ResetButton onClick={() => reset()}>Reset</ResetButton>
       </Footer>
     </Wrapper>

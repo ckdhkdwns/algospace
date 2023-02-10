@@ -1,27 +1,34 @@
-import { useEffect, useState, useRef, RefObject } from "react";
+import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
-import Image from "next/image";
-import { AnimationControls, motion, useAnimation, useAnimationControls } from "framer-motion"
-import { Node, Position } from "interfaces/types";
+import { useAnimationControls } from "framer-motion";
+import { Node } from "interfaces/types";
 import { NonEmptyArray } from "interfaces/interfaces";
 import { getElementWidth, getElementHeight } from "@/utils/elements";
 import BSTController from "@/components/bst/controller";
 import BSTBoard from "@/components/bst/board/board";
 
-import domtoimage from 'dom-to-image';
-import { saveAs } from 'file-saver';
+import domtoimage from "dom-to-image";
+import { saveAs } from "file-saver";
+import ExportModal from "@/components/bst/exportModal/exportModal";
 
 const Wrapper = styled.div`
-  width: 90%;
+  width: 100%;
   margin: auto auto;
   display: flex;
   box-sizing: border-box;
-  background-color: ${props => props.theme.colors.white};
+  height: 100vh;
+`;
+
+const Main = styled.div`
+  display: flex;
+  background-color: ${(props) => props.theme.colors.white};
+  border-radius: ${(props) => props.theme.borderRadius.medium};
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
     rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-  
-  border-radius: ${props => props.theme.borderRadius.medium};
+  width: 90%;
   height: 90vh;
+  margin: auto auto;
+  box-sizing: border-box;
 `;
 
 export default function BinarySearchTree() {
@@ -35,29 +42,64 @@ export default function BinarySearchTree() {
   const [isAnimationActive, setIsAnimationActive] = useState(true);
 
   const MAX_DEPTH = 6;
-  const [ XGAP, setXGAP ] = useState(0);
-  const [ YGAP, setYGAP ] = useState(0);
-  
+  const [XGAP, setXGAP] = useState(0);
+  const [YGAP, setYGAP] = useState(0);
+
   const [delay, setDelay] = useState(1);
   const [duration, setDuration] = useState(0.5);
   const [strokeColor, setStrokeColor] = useState("#FF5733");
 
   const [isAnimating, setIsAnimating] = useState(false);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
   const initGaps = () => {
-    if(boardRef) {
-      setXGAP(getElementWidth(boardRef)! / (2 ** (MAX_DEPTH + 2.1)));
-      setYGAP(Math.floor(getElementHeight(boardRef)! /MAX_DEPTH));
+    if (boardRef) {
+      setXGAP(getElementWidth(boardRef)! / 2 ** (MAX_DEPTH + 2.1));
+      setYGAP(Math.floor(getElementHeight(boardRef)! / MAX_DEPTH));
     }
-  }
+  };
   useEffect(() => {
     initGaps();
-  },[boardRef]);
+  }, [boardRef]);
 
-  
-  
+  const onExport = (name: string, extension: string) => {
+    const img = boardRef.current;
+    console.log(img);
+    if (!img) return;
+    function filter(node: any) {
+      return node.tagName !== "i";
+    }
 
-  const appendLeftChild = (parentNode:number, value: number, xPosition: number) => {
+    if (extension == "SVG") {
+      domtoimage.toSvg(img, { filter: filter }).then(function (dataUrl) {
+        const link = document.createElement("a");
+        link.download = `${name}.svg`;
+        link.href = dataUrl;
+        link.click();
+      });
+    }
+    if (extension == "PNG") {
+      domtoimage.toBlob(img).then(function (blob) {
+        saveAs(blob, `${name}.png`);
+      });
+    }
+    if (extension == "JPEG") {
+      domtoimage.toJpeg(img, { quality: 1 }).then(function (dataUrl) {
+        var link = document.createElement("a");
+        link.download = `${name}.jpeg`;
+        link.href = dataUrl;
+        link.click();
+      });
+    }
+  };
+
+  const appendLeftChild = (
+    parentNode: number,
+    value: number,
+    xPosition: number
+  ) => {
     setNodes([
       ...nodes,
       {
@@ -73,9 +115,13 @@ export default function BinarySearchTree() {
         active: true,
       },
     ]);
-  }
+  };
 
-  const appendRightChild = (parentNode: number, value: number, xPosition: number) => {
+  const appendRightChild = (
+    parentNode: number,
+    value: number,
+    xPosition: number
+  ) => {
     setNodes([
       ...nodes,
       {
@@ -91,13 +137,13 @@ export default function BinarySearchTree() {
         active: true,
       },
     ]);
-  }
-  
+  };
+
   const appendRootNode = (value: number) => {
     setNodes([
       {
         value: value,
-        
+
         parentNode: -1,
         leftNode: null,
         rightNode: null,
@@ -108,7 +154,7 @@ export default function BinarySearchTree() {
         active: true,
       },
     ]);
-  }
+  };
 
   const insertNode = (
     insertValue: number,
@@ -118,7 +164,8 @@ export default function BinarySearchTree() {
     path: number[]
   ) => {
     if (index === null) return;
-    if (nodes.length == rootNode) { // 삽입하려는 노드가 첫번째 노드 (root node)라면
+    if (nodes.length == rootNode) {
+      // 삽입하려는 노드가 첫번째 노드 (root node)라면
       appendRootNode(insertValue);
       return;
     }
@@ -130,7 +177,9 @@ export default function BinarySearchTree() {
           insertValue,
           node,
           depth + 1,
-          xPosition - 2 **  (MAX_DEPTH - depth),path);
+          xPosition - 2 ** (MAX_DEPTH - depth),
+          path
+        );
       } else {
         nodes[index].leftNode = nodes.length;
         appendLeftChild(index, insertValue, xPosition);
@@ -145,7 +194,7 @@ export default function BinarySearchTree() {
           insertValue,
           node,
           depth + 1,
-          xPosition - 2 **  (MAX_DEPTH - depth),
+          xPosition - 2 ** (MAX_DEPTH - depth),
           path
         );
       } else {
@@ -154,8 +203,7 @@ export default function BinarySearchTree() {
         path.push(nodes.length);
         setInsertNodePath(path);
       }
-    }    
-    
+    }
   };
 
   const replaceNodes = (
@@ -169,29 +217,27 @@ export default function BinarySearchTree() {
       depth: number,
       xPosition: number
     ) => {
-      if(index == rootNode) {
-
+      if (index == rootNode) {
       }
-    }
-    
-  }
+    };
+  };
   function isNonEmpty<T>(arr: Array<T>): arr is NonEmptyArray<T> {
     return arr.length > 0;
   }
-  
-  const getRemoveIndex = (value:number, index:number) => {
+
+  const getRemoveIndex = (value: number, index: number) => {
     let result = -1;
-    const recursion = (value:number, index:number) => {
-      if(nodes[index].value == value) result = index;
+    const recursion = (value: number, index: number) => {
+      if (nodes[index].value == value) result = index;
 
       const leftNode = nodes[index].leftNode;
       const rightNode = nodes[index].rightNode;
-      if(leftNode) recursion(value, leftNode);
-      if(rightNode) recursion(value, rightNode); 
-    }
+      if (leftNode) recursion(value, leftNode);
+      if (rightNode) recursion(value, rightNode);
+    };
     recursion(value, index);
     return result;
-  }
+  };
 
   const getSuccessorIndex = (value: number) => {
     let currentNode: any = rootNode;
@@ -233,30 +279,31 @@ export default function BinarySearchTree() {
     const removeIndex: number = getRemoveIndex(removeValue, rootNode);
     const successorIndex: number = indexs[1];
 
-    if(removeIndex == -1) return;
+    if (removeIndex == -1) return;
     nodes[removeIndex].active = false;
 
     const copiedNodes = [...nodes];
-    const parentNode:number = copiedNodes[removeIndex].parentNode!;
+    const parentNode: number = copiedNodes[removeIndex].parentNode!;
     const isLeftNode = copiedNodes[removeIndex] < copiedNodes[parentNode];
-
 
     // case 1 : node to be removed have tho children
     if (
       nodes[removeIndex].leftNode !== null &&
       nodes[removeIndex].rightNode !== null
     ) {
-      if(isLeftNode) copiedNodes[parentNode].leftNode = successorIndex;
+      if (isLeftNode) copiedNodes[parentNode].leftNode = successorIndex;
       else copiedNodes[parentNode].rightNode = successorIndex;
 
       // 지우고자 하는 노드의 자식노드 중에 지울 노드의 후임 노드가 있을 경우 고려
       if (nodes[removeIndex].leftNode !== successorIndex)
-        copiedNodes[successorIndex].leftNode = copiedNodes[removeIndex].leftNode;
+        copiedNodes[successorIndex].leftNode =
+          copiedNodes[removeIndex].leftNode;
       if (nodes[removeIndex].rightNode !== successorIndex)
-        copiedNodes[successorIndex].rightNode = copiedNodes[removeIndex].rightNode;
+        copiedNodes[successorIndex].rightNode =
+          copiedNodes[removeIndex].rightNode;
 
-        copiedNodes[successorIndex].top = copiedNodes[removeIndex].top;
-        copiedNodes[successorIndex].left = copiedNodes[removeIndex].left;
+      copiedNodes[successorIndex].top = copiedNodes[removeIndex].top;
+      copiedNodes[successorIndex].left = copiedNodes[removeIndex].left;
     }
     // case 2 : node to be removed has only left child
     else if (nodes[removeIndex].leftNode !== null) {
@@ -264,25 +311,28 @@ export default function BinarySearchTree() {
 
       copiedNodes[leftIndex].top = copiedNodes[removeIndex].top;
       copiedNodes[leftIndex].left = copiedNodes[removeIndex].left;
-      console.log(nodes[removeIndex], nodes[leftIndex])
-      if(isLeftNode) copiedNodes[parentNode].leftNode = copiedNodes[removeIndex].leftNode;
-      else copiedNodes[parentNode].rightNode = copiedNodes[removeIndex].leftNode;  
+      console.log(nodes[removeIndex], nodes[leftIndex]);
+      if (isLeftNode)
+        copiedNodes[parentNode].leftNode = copiedNodes[removeIndex].leftNode;
+      else
+        copiedNodes[parentNode].rightNode = copiedNodes[removeIndex].leftNode;
     }
     // case 3 : node to be removed has only right child
     else if (nodes[removeIndex].rightNode !== null) {
-      
       const rightIndex: number = nodes[removeIndex].rightNode!;
 
       copiedNodes[rightIndex].top = copiedNodes[removeIndex].top;
       copiedNodes[rightIndex].left = copiedNodes[removeIndex].left;
-      
-      if(isLeftNode) copiedNodes[parentNode].leftNode = copiedNodes[removeIndex].rightNode;
-      else copiedNodes[parentNode].rightNode = copiedNodes[removeIndex].rightNode;  
+
+      if (isLeftNode)
+        copiedNodes[parentNode].leftNode = copiedNodes[removeIndex].rightNode;
+      else
+        copiedNodes[parentNode].rightNode = copiedNodes[removeIndex].rightNode;
     }
 
     // case 4: node to be removed doesn't have any children
     else {
-      if(isLeftNode) copiedNodes[parentNode].leftNode = null;
+      if (isLeftNode) copiedNodes[parentNode].leftNode = null;
       else copiedNodes[parentNode].rightNode = null;
     }
     setNodes(copiedNodes);
@@ -290,14 +340,14 @@ export default function BinarySearchTree() {
 
   useEffect(() => {
     if (nodes.length == 0) return;
-    animateInsert(nodes[nodes.length-1]);
-    if(isAnimationActive) setIsAnimating(true);
-  }, [nodes])
+    animateInsert(nodes[nodes.length - 1]);
+    if (isAnimationActive) setIsAnimating(true);
+  }, [nodes]);
 
   useEffect(() => console.log(isAnimating), [isAnimating]);
 
   useEffect(() => {
-    if(isAnimationActive) {
+    if (isAnimationActive) {
       setDelay(1);
       setDuration(0.5);
       setStrokeColor("#FF5733");
@@ -306,13 +356,14 @@ export default function BinarySearchTree() {
       setDuration(0);
       setStrokeColor("#000000");
     }
-  }, [isAnimationActive])
+  }, [isAnimationActive]);
 
-  
   const onInsertInputPress = (e: any) => {
     if (e.key == "Enter") {
       if (!isNaN(e.target.value)) {
-        insertNode(e.target.value*=1, rootNode, 1, 2 ** MAX_DEPTH, [rootNode]);
+        insertNode((e.target.value *= 1), rootNode, 1, 2 ** MAX_DEPTH, [
+          rootNode,
+        ]);
         e.target.value = "";
       }
     }
@@ -338,115 +389,143 @@ export default function BinarySearchTree() {
   const rightLineControl = useAnimationControls();
   const textControl = useAnimationControls();
 
+  const colorElementsToDefault = async (
+    duration: number,
+    delay: number,
+    goalDepth: number
+  ) => {
+    leftLineControl.start((idx) => ({
+      stroke: "#000000",
+      transition: { duration: duration, delay: delay },
+    }));
+    rightLineControl.start((idx) => ({
+      stroke: "#000000",
+      transition: { duration: duration, delay: delay },
+    }));
+    await circleControl.start((idx) => ({
+      stroke: "#000000",
+      transition: { duration: duration, delay: delay },
+    }));
+  };
 
-  const colorElementsToDefault = async (duration: number, delay: number, goalDepth: number) => {
-    leftLineControl.start(idx => ({
-      stroke: "#000000",
-      transition: { duration: duration, delay: delay }
-    }))
-    rightLineControl.start(idx => ({
-      stroke: "#000000",
-      transition: { duration: duration, delay: delay  }
-    }))
-    await circleControl.start(idx => ({
-      stroke: "#000000",
-      transition: { duration: duration, delay: delay  }
-    }))
-  }
-
-  
   const animateLines = () => {
-    leftLineControl.start((idx:number) => ({
-      stroke: insertNodePath.includes(nodes[idx].leftNode!) ? strokeColor : "#000000",
+    leftLineControl.start((idx: number) => ({
+      stroke: insertNodePath.includes(nodes[idx].leftNode!)
+        ? strokeColor
+        : "#000000",
       pathLength: 1,
       transition: {
-        pathLength : { duration: duration, delay: (nodes[idx].depth + 1) * (delay) },
-        stroke : { duration: duration, delay: (nodes[idx].depth + 1) * (delay) },
-      }
-    }))
-    rightLineControl.start((idx:number) => ({
-      stroke: insertNodePath.includes(nodes[idx].rightNode!) ? strokeColor : "#000000",
+        pathLength: {
+          duration: duration,
+          delay: (nodes[idx].depth + 1) * delay,
+        },
+        stroke: { duration: duration, delay: (nodes[idx].depth + 1) * delay },
+      },
+    }));
+    rightLineControl.start((idx: number) => ({
+      stroke: insertNodePath.includes(nodes[idx].rightNode!)
+        ? strokeColor
+        : "#000000",
       pathLength: 1,
       transition: {
-        pathLength : { duration: duration, delay: (nodes[idx].depth + 1)* (delay) },
-        stroke : { duration: duration, delay: (nodes[idx].depth + 1) * (delay) },
-      }
-    }))
-  }
+        pathLength: {
+          duration: duration,
+          delay: (nodes[idx].depth + 1) * delay,
+        },
+        stroke: { duration: duration, delay: (nodes[idx].depth + 1) * delay },
+      },
+    }));
+  };
 
   const animateTexts = () => {
-    textControl.start(idx => ({
+    textControl.start((idx) => ({
       opacity: 1,
-      transition: { duration: duration, delay: nodes[idx].depth == 0 ? (nodes[idx].depth) * (delay) : (nodes[idx].depth + duration) * (delay) }
-    }))
-  }
+      transition: {
+        duration: duration,
+        delay:
+          nodes[idx].depth == 0
+            ? nodes[idx].depth * delay
+            : (nodes[idx].depth + duration) * delay,
+      },
+    }));
+  };
 
   const animateCircles = async (goalDepth: number) => {
-    const limitedDelay = (idx:number) => goalDepth * delay > nodes[idx].depth * delay ? nodes[idx].depth * delay : goalDepth * delay;
-    await circleControl.start((idx:number) => ({
-      stroke: insertNodePath.includes(idx)? strokeColor : "#000000",
+    const limitedDelay = (idx: number) =>
+      goalDepth * delay > nodes[idx].depth * delay
+        ? nodes[idx].depth * delay
+        : goalDepth * delay;
+    await circleControl.start((idx: number) => ({
+      stroke: insertNodePath.includes(idx) ? strokeColor : "#000000",
       opacity: [idx + 1 == nodes.length ? 0 : 1, 1],
-      cx: [idx + 1== nodes.length && nodes[nodes[idx].parentNode]?.left ? nodes[nodes[idx].parentNode].left: nodes[idx].left, nodes[idx].left],
-      cy: [idx + 1 == nodes.length && nodes[nodes[idx].parentNode]?.top ? nodes[nodes[idx].parentNode].top: nodes[idx].top, nodes[idx].top],
+      cx: [
+        idx + 1 == nodes.length && nodes[nodes[idx].parentNode]?.left
+          ? nodes[nodes[idx].parentNode].left
+          : nodes[idx].left,
+        nodes[idx].left,
+      ],
+      cy: [
+        idx + 1 == nodes.length && nodes[nodes[idx].parentNode]?.top
+          ? nodes[nodes[idx].parentNode].top
+          : nodes[idx].top,
+        nodes[idx].top,
+      ],
 
-      transition: { 
+      transition: {
         stroke: { duration: duration, delay: limitedDelay(idx) },
         cx: { duration: duration, delay: limitedDelay(idx) },
         cy: { duration: duration, delay: limitedDelay(idx) },
-        opacity: { duration: duration/5, delay: limitedDelay(idx)
-        }
-      }
-    }))
-  }
+        opacity: {
+          duration: duration / 5,
+          delay: limitedDelay(idx),
+        },
+      },
+    }));
+  };
 
-  const animateInsert = async(insertNode:Node) => {
+  const animateInsert = async (insertNode: Node) => {
     const goalDepth = insertNode.depth;
-    
+
     animateLines();
     animateTexts();
     await animateCircles(goalDepth);
 
     await colorElementsToDefault(duration, delay, goalDepth);
     setIsAnimating(false);
-    setInsertNodePath([rootNode])
-        
-  }
-  const onExport = () => {
-    const img = boardRef.current;
-    console.log(img);
-    if(!img) return;
-    domtoimage
-      .toBlob(img)
-      .then((blob) => {
-        saveAs(blob, 'bst.png');
-      });
+    setInsertNodePath([rootNode]);
   };
+
   return (
     <Wrapper>
-      <BSTBoard 
-        svgRef={svgRef}
-        boardRef={boardRef}
-        nodes={nodes}
-        leftLineControl={leftLineControl}
-        rightLineControl={rightLineControl}
-        circleControl={circleControl}
-        textControl={textControl}
-      />
-      <BSTController
-        onInsertInputPress={(e:any) => onInsertInputPress(e)}
-        onRemoveInputPress={(e:any) => onRemoveInputPress(e)}
-        insertInput={insertInput}
-        removeInput={removeInput}
-        reset={() => reset()}
+      <Main>
+        <BSTBoard
+          svgRef={svgRef}
+          boardRef={boardRef}
+          nodes={nodes}
+          leftLineControl={leftLineControl}
+          rightLineControl={rightLineControl}
+          circleControl={circleControl}
+          textControl={textControl}
+        />
+        <BSTController
+          onInsertInputPress={(e: any) => onInsertInputPress(e)}
+          onRemoveInputPress={(e: any) => onRemoveInputPress(e)}
+          insertInput={insertInput}
+          removeInput={removeInput}
+          reset={() => reset()}
+          isAnimationActive={isAnimationActive}
+          setIsAnimationActive={(b: any) => setIsAnimationActive(b)}
+          isAnimating={isAnimating}
+          setIsModalOpen={setIsModalOpen}
+        />
+      </Main>
 
-        isAnimationActive={isAnimationActive}
-        setIsAnimationActive={(b:any) => setIsAnimationActive(b)}
-        isAnimating={isAnimating}
-        onExport={() => onExport()}
+      <ExportModal
+        boardRef={boardRef}
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        onExport={onExport}
       />
     </Wrapper>
   );
 }
-
-
-
