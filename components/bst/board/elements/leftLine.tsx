@@ -17,10 +17,10 @@ type LeftLineControl = {
 export default function LeftLine({ nodes, node, idx, strokeColor, leftLineControl }:LeftLineControl) {
     if(!node.leftNode) return <></>;
     return <Line
-      x1={node.left}
-      y1={node.top}
-      x2={nodes[node.leftNode].left}
-      y2={nodes[node.leftNode].top}
+      x1={node.position.left}
+      y1={node.position.top}
+      x2={nodes[node.leftNode].position.left}
+      y2={nodes[node.leftNode].position.top}
       initial={{ stroke: strokeColor, pathLength: 0 }}
       animate={leftLineControl}
       custom={idx}

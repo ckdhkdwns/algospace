@@ -1,4 +1,4 @@
-import { Ref, useEffect, useRef, useState } from "react";
+import { Ref, RefObject, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import FileExtensionDropdown from "./fileExtensionDropdown";
 import domtoimage from 'dom-to-image';
@@ -80,21 +80,18 @@ const ExportButton = styled.button`
 type ExportModalProps = {
   isModalOpen: boolean,
   setIsModalOpen: Function,
-  boardRef: Ref<HTMLDivElement>,
-  onExport: Function
+  boardRef: RefObject<HTMLDivElement>,
 };
 
 export default function ExportModal({
   isModalOpen,
   setIsModalOpen,
   boardRef,
-  onExport
 }: ExportModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const nameRef = useRef<HTMLInputElement | null>(null);
-  const extensionRef = useRef<HTMLInputElement | null>(null);
-
   const [selectedExtension, setSelectedExtension] = useState("PNG");
+
   useEffect(() => {
     // 이벤트 핸들러 함수
     const handler = (e:any) => {
@@ -109,10 +106,38 @@ export default function ExportModal({
     //f
   }, []);
 
+  const exportImage = (name: string | undefined , extension: string) => {
+    if(typeof name == undefined) return;
+    if(!boardRef) return; 
+    const img = boardRef.current;
+    console.log(img);
+    if (!img) return;
+    function filter(node: any) {
+      return node.tagName !== "i";
+    }
 
-  const onClickExport = () => {
-    onExport(nameRef.current?.value, selectedExtension);
-  }
+    if (extension == "SVG") {
+      domtoimage.toSvg(img, { filter: filter }).then(function (dataUrl) {
+        const link = document.createElement("a");
+        link.download = `${name}.svg`;
+        link.href = dataUrl;
+        link.click();
+      });
+    }
+    if (extension == "PNG") {
+      domtoimage.toBlob(img).then(function (blob) {
+        saveAs(blob, `${name}.png`);
+      });
+    }
+    if (extension == "JPEG") {
+      domtoimage.toJpeg(img, { quality: 1 }).then(function (dataUrl) {
+        var link = document.createElement("a");
+        link.download = `${name}.jpeg`;
+        link.href = dataUrl;
+        link.click();
+      });
+    }
+  };
   return (
     <Wrapper isModalOpen={isModalOpen}>
       <Modal ref={modalRef}>
@@ -128,7 +153,7 @@ export default function ExportModal({
             setSelectedExtension={setSelectedExtension}
           ></FileExtensionDropdown>
         </FileExtension>
-        <ExportButton onClick={() => onClickExport()}>Export</ExportButton>
+        <ExportButton onClick={() => exportImage(nameRef.current?.value, selectedExtension)}>Export</ExportButton>
       </Modal>
     </Wrapper>
   );

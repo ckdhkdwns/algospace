@@ -17,10 +17,10 @@ type RightLineControl = {
 export default function RightLine({ nodes, node, idx, strokeColor, rightLineControl }:RightLineControl) {
     if(!node.rightNode) return <></>;
     return <Line
-      x1={node.left}
-      y1={node.top}
-      x2={nodes[node.rightNode].left}
-      y2={nodes[node.rightNode].top}
+      x1={node.position.left}
+      y1={node.position.top}
+      x2={nodes[node.rightNode].position.left}
+      y2={nodes[node.rightNode].position.top}
       initial={{ stroke: strokeColor, pathLength: 0 }}
       animate={rightLineControl}
       custom={idx}

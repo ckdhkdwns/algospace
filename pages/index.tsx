@@ -99,16 +99,14 @@
           <Subtitle>Visualize various data structures and algorithms.</Subtitle>
         </Header>
         <Body>
-          
           <BSTBtn onClick={() => { Router.push("/board/binary-search-tree") }}>
             <Image src="/bst.svg" alt="bst" width="170" height="170" />
             <TitleWrapper>
               <BtnTitle>Binary Search Tree</BtnTitle>
               <BtnSubtitle>Insert and Delete nodes in BST</BtnSubtitle>
             </TitleWrapper>
-            
           </BSTBtn>
-          <AVLBtn onClick={() => { Router.push("/board/avl-tree") }}>
+          <AVLBtn onClick={() => { Router.push("/board/sorting") }}>
             <Image src="/sorting.svg" alt="bst" width="174" height="174"/>
             <TitleWrapper>
               <BtnTitle>Sorting</BtnTitle>

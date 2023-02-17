@@ -1,15 +1,16 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, RefObject, Ref } from "react";
 import styled from "styled-components";
 import { useAnimationControls } from "framer-motion";
-import { Node } from "interfaces/types";
+import { Node, Position } from "interfaces/types";
 import { NonEmptyArray } from "interfaces/interfaces";
-import { getElementWidth, getElementHeight } from "@/utils/elements";
 import BSTController from "@/components/bst/controller";
 import BSTBoard from "@/components/bst/board/board";
 
-import domtoimage from "dom-to-image";
-import { saveAs } from "file-saver";
 import ExportModal from "@/components/bst/exportModal/exportModal";
+import useGaps from "@/utils/hooks/useGaps";
+import { debounce } from "@mui/material";
+import useAnimationValues from "@/utils/hooks/useAnimationValues";
+import { MdArrowBack } from "react-icons/md";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -21,6 +22,7 @@ const Wrapper = styled.div`
 
 const Main = styled.div`
   display: flex;
+  position: relative;
   background-color: ${(props) => props.theme.colors.white};
   border-radius: ${(props) => props.theme.borderRadius.medium};
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
@@ -33,73 +35,57 @@ const Main = styled.div`
 
 export default function BinarySearchTree() {
   const boardRef = useRef<HTMLDivElement>(null);
-  const svgRef = useRef<SVGElement>(null);
   const [rootNode, setRootNode] = useState<number>(0);
   const [nodes, setNodes] = useState<Node[]>([]);
-  const insertInput = useRef<HTMLInputElement>(null);
-  const removeInput = useRef<HTMLInputElement>(null);
   const [insertNodePath, setInsertNodePath] = useState([rootNode]);
-  const [isAnimationActive, setIsAnimationActive] = useState(true);
-
-  const MAX_DEPTH = 6;
-  const [XGAP, setXGAP] = useState(0);
-  const [YGAP, setYGAP] = useState(0);
-
-  const [delay, setDelay] = useState(1);
-  const [duration, setDuration] = useState(0.5);
-  const [strokeColor, setStrokeColor] = useState("#FF5733");
+  
+  const [windowSize, setWindowSize] = useState({})
+  const [XGAP, YGAP] = useGaps(boardRef, windowSize);
 
   const [isAnimating, setIsAnimating] = useState(false);
-
+  const [isAnimationActive, setIsAnimationActive] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
 
-  const initGaps = () => {
-    if (boardRef) {
-      setXGAP(getElementWidth(boardRef)! / 2 ** (MAX_DEPTH + 2.1));
-      setYGAP(Math.floor(getElementHeight(boardRef)! / MAX_DEPTH));
-    }
-  };
+  const [delay, duration, strokeColor] = useAnimationValues(isAnimationActive)
+
   useEffect(() => {
-    initGaps();
-  }, [boardRef]);
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+    const handleResize = debounce(() => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });    
+    }, 500);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    }
+  },[]);
 
-  const onExport = (name: string, extension: string) => {
-    const img = boardRef.current;
-    console.log(img);
-    if (!img) return;
-    function filter(node: any) {
-      return node.tagName !== "i";
-    }
+  useEffect(() => {
+    if(nodes.length !== 0) replaceNodes(nodes);
+  }, [XGAP, YGAP])
 
-    if (extension == "SVG") {
-      domtoimage.toSvg(img, { filter: filter }).then(function (dataUrl) {
-        const link = document.createElement("a");
-        link.download = `${name}.svg`;
-        link.href = dataUrl;
-        link.click();
-      });
-    }
-    if (extension == "PNG") {
-      domtoimage.toBlob(img).then(function (blob) {
-        saveAs(blob, `${name}.png`);
-      });
-    }
-    if (extension == "JPEG") {
-      domtoimage.toJpeg(img, { quality: 1 }).then(function (dataUrl) {
-        var link = document.createElement("a");
-        link.download = `${name}.jpeg`;
-        link.href = dataUrl;
-        link.click();
-      });
-    }
-  };
-
-  const appendLeftChild = (
+  useEffect(() => {
+    if (nodes.length == 0) return;
+    animateInsert(nodes[nodes.length - 1]);
+    if (isAnimationActive) setIsAnimating(true);
+  }, [nodes]);
+ 
+  type appendChildProps = {
     parentNode: number,
     value: number,
-    xPosition: number
-  ) => {
+    position: Position
+  }
+
+  const appendChild = ({
+    parentNode,
+    value,
+    position
+  }:appendChildProps) => {
     setNodes([
       ...nodes,
       {
@@ -109,118 +95,116 @@ export default function BinarySearchTree() {
         leftNode: null,
         rightNode: null,
 
-        depth: nodes[parentNode].depth + 1,
-        top: nodes[parentNode].top + YGAP,
-        left: nodes[parentNode].left - xPosition * XGAP,
-        active: true,
+        depth: parentNode == -1 ? 0 : nodes[parentNode].depth + 1,
+        position: {
+          top: position.top,
+          left: position.left,
+        },
+        removed: false,
       },
     ]);
-  };
+  }
 
-  const appendRightChild = (
-    parentNode: number,
-    value: number,
-    xPosition: number
-  ) => {
-    setNodes([
-      ...nodes,
-      {
-        value: value,
+  const getNodePosition = (directions: string[]) => {
+    const depth = directions.length;
+    const boardWidth:number | null = boardRef?.current && boardRef.current.getBoundingClientRect().width;
 
-        parentNode: parentNode,
-        leftNode: null,
-        rightNode: null,
+    if(boardWidth == null) throw new Error;
+    let top = YGAP / 2;
+    let left = boardWidth! / 2;
+    if(depth == 0) return {
+      top: top,
+      left: left
+    };
+    for(let i=0;i<depth;i++) {
+      top += YGAP;
+      if(directions[i] == "L") left -= boardWidth * 0.95 / (2 ** (i + 2));
+      else left += boardWidth * 0.95 / (2 ** (i + 2));
+    }
+    return {
+      top: top,
+      left: left
+    };
+  }
 
-        depth: nodes[parentNode].depth + 1,
-        top: nodes[parentNode].top + YGAP,
-        left: nodes[parentNode].left + xPosition * XGAP,
-        active: true,
-      },
-    ]);
-  };
-
-  const appendRootNode = (value: number) => {
-    setNodes([
-      {
-        value: value,
-
-        parentNode: -1,
-        leftNode: null,
-        rightNode: null,
-
-        depth: 0,
-        top: YGAP / 2,
-        left: getElementWidth(boardRef)! / 2,
-        active: true,
-      },
-    ]);
-  };
-
-  const insertNode = (
-    insertValue: number,
-    index: number | null,
-    depth: number,
-    xPosition: number,
-    path: number[]
-  ) => {
-    if (index === null) return;
+  const insertNode = (insertValue: number) => {
     if (nodes.length == rootNode) {
       // 삽입하려는 노드가 첫번째 노드 (root node)라면
-      appendRootNode(insertValue);
+      appendChild({
+        parentNode: -1,
+        value: insertValue,
+        position: getNodePosition([])
+      })
       return;
     }
-    if (insertValue < nodes[index].value) {
-      const node = nodes[index].leftNode;
-      if (node) {
-        path.push(node);
-        insertNode(
-          insertValue,
-          node,
-          depth + 1,
-          xPosition - 2 ** (MAX_DEPTH - depth),
-          path
-        );
+    const recursion = (currentNode:number, directions:string[], path:number[]) => {
+      if (insertValue < nodes[currentNode].value) {
+        const leftChildNode = nodes[currentNode].leftNode;
+        if (leftChildNode) {
+          recursion(
+            leftChildNode,
+            [...directions, "L"],
+            [...path, leftChildNode]
+          );
+        } else {
+          nodes[currentNode].leftNode = nodes.length;
+          appendChild({
+            parentNode: currentNode,
+            value: insertValue,
+            position: getNodePosition([...directions, "L"])
+          })
+          path.push(nodes.length);
+          setInsertNodePath(path);
+        }
       } else {
-        nodes[index].leftNode = nodes.length;
-        appendLeftChild(index, insertValue, xPosition);
-        path.push(nodes.length);
-        setInsertNodePath(path);
-      }
-    } else {
-      const node = nodes[index].rightNode;
-      if (node) {
-        path.push(node);
-        insertNode(
-          insertValue,
-          node,
-          depth + 1,
-          xPosition - 2 ** (MAX_DEPTH - depth),
-          path
-        );
-      } else {
-        nodes[index].rightNode = nodes.length;
-        appendRightChild(index, insertValue, xPosition);
-        path.push(nodes.length);
-        setInsertNodePath(path);
+        const rightChildNode = nodes[currentNode].rightNode;
+        if (rightChildNode) {
+          recursion(
+            rightChildNode,
+            [...directions, "R"],
+            [...path, rightChildNode]
+          );
+        } else {
+          nodes[currentNode].rightNode = nodes.length;
+          appendChild({
+            parentNode: currentNode,
+            value: insertValue,
+            position: getNodePosition([...directions, "R"])
+          })
+          path.push(nodes.length);
+          setInsertNodePath(path);
+        }
       }
     }
+    recursion(rootNode, [], [rootNode]);
   };
 
-  const replaceNodes = (
-    index: number | null,
-    depth: number,
-    xPosition: number
-  ) => {
-    const copiedNodes = [...nodes];
+  const replaceNodes = (nodes: Node[]) => {
+    const copiedNodes = [...nodes];    
     const recursion = (
       index: number | null,
-      depth: number,
-      xPosition: number
+      directions: string[]
     ) => {
-      if (index == rootNode) {
+      
+      if (index == null) return;
+      if (index == rootNode) copiedNodes[rootNode].position = getNodePosition([]);
+      else {
+        copiedNodes[index].position = getNodePosition(directions);
+        copiedNodes[index].depth = directions.length;
       }
+      recursion(
+        copiedNodes[index].leftNode,
+        [...directions, "L"]
+      )
+      recursion(
+        copiedNodes[index].rightNode,
+        [...directions, "R"]
+      )
     };
+    if(nodes.length !== 0) recursion(rootNode, []);
+    setNodes([...copiedNodes]);
   };
+
   function isNonEmpty<T>(arr: Array<T>): arr is NonEmptyArray<T> {
     return arr.length > 0;
   }
@@ -264,106 +248,68 @@ export default function BinarySearchTree() {
     }
     // 후임 노드가 없다면 -1을 리턴
     let successorIndex = -1;
-    if (result[result.length - 1] == valueIndex)
-      return [valueIndex, successorIndex];
-
     result.map((node, idx) => {
       if (node == valueIndex) successorIndex = result[idx + 1];
     });
 
-    return [valueIndex, successorIndex];
+    return successorIndex;
   };
 
-  const removeNodeInBST = (removeValue: number) => {
-    const indexs: number[] = getSuccessorIndex(removeValue);
+  const removeNode = (removeValue: number) => {
+    const copiedNodes = [...nodes];
     const removeIndex: number = getRemoveIndex(removeValue, rootNode);
-    const successorIndex: number = indexs[1];
+    const removeNode: Node = copiedNodes[removeIndex];
+    const successorIndex: number = getSuccessorIndex(removeValue);
 
     if (removeIndex == -1) return;
-    nodes[removeIndex].active = false;
+    removeNode.removed = true;
 
-    const copiedNodes = [...nodes];
-    const parentNode: number = copiedNodes[removeIndex].parentNode!;
-    const isLeftNode = copiedNodes[removeIndex] < copiedNodes[parentNode];
-
+    const parentIndex: number = copiedNodes[removeIndex].parentNode!;
+    const isLeftNode = copiedNodes[removeIndex].value < copiedNodes[parentIndex].value;
     // case 1 : node to be removed have tho children
     if (
-      nodes[removeIndex].leftNode !== null &&
-      nodes[removeIndex].rightNode !== null
+      copiedNodes[removeIndex].leftNode !== null &&
+      copiedNodes[removeIndex].rightNode !== null
     ) {
-      if (isLeftNode) copiedNodes[parentNode].leftNode = successorIndex;
-      else copiedNodes[parentNode].rightNode = successorIndex;
+      if (isLeftNode) copiedNodes[parentIndex].leftNode = successorIndex;
+      else copiedNodes[parentIndex].rightNode = successorIndex;
+      copiedNodes[successorIndex].parentNode = removeNode.parentNode;
 
       // 지우고자 하는 노드의 자식노드 중에 지울 노드의 후임 노드가 있을 경우 고려
-      if (nodes[removeIndex].leftNode !== successorIndex)
+      if (copiedNodes[removeIndex].leftNode !== successorIndex)
         copiedNodes[successorIndex].leftNode =
           copiedNodes[removeIndex].leftNode;
-      if (nodes[removeIndex].rightNode !== successorIndex)
+      if (copiedNodes[removeIndex].rightNode !== successorIndex)
         copiedNodes[successorIndex].rightNode =
           copiedNodes[removeIndex].rightNode;
 
-      copiedNodes[successorIndex].top = copiedNodes[removeIndex].top;
-      copiedNodes[successorIndex].left = copiedNodes[removeIndex].left;
+      copiedNodes[successorIndex].position = copiedNodes[removeIndex].position;     
     }
     // case 2 : node to be removed has only left child
-    else if (nodes[removeIndex].leftNode !== null) {
-      const leftIndex: number = nodes[removeIndex].leftNode!;
-
-      copiedNodes[leftIndex].top = copiedNodes[removeIndex].top;
-      copiedNodes[leftIndex].left = copiedNodes[removeIndex].left;
-      console.log(nodes[removeIndex], nodes[leftIndex]);
-      if (isLeftNode)
-        copiedNodes[parentNode].leftNode = copiedNodes[removeIndex].leftNode;
-      else
-        copiedNodes[parentNode].rightNode = copiedNodes[removeIndex].leftNode;
+    else if (copiedNodes[removeIndex].leftNode !== null) { 
+      if (isLeftNode) copiedNodes[parentIndex].leftNode = removeNode.leftNode;
+      else copiedNodes[parentIndex].rightNode = copiedNodes[removeIndex].leftNode;
+      copiedNodes[removeNode.leftNode!].parentNode = removeNode.parentNode;
     }
     // case 3 : node to be removed has only right child
-    else if (nodes[removeIndex].rightNode !== null) {
-      const rightIndex: number = nodes[removeIndex].rightNode!;
-
-      copiedNodes[rightIndex].top = copiedNodes[removeIndex].top;
-      copiedNodes[rightIndex].left = copiedNodes[removeIndex].left;
-
-      if (isLeftNode)
-        copiedNodes[parentNode].leftNode = copiedNodes[removeIndex].rightNode;
-      else
-        copiedNodes[parentNode].rightNode = copiedNodes[removeIndex].rightNode;
+    else if (copiedNodes[removeIndex].rightNode !== null) {
+      if (isLeftNode) copiedNodes[parentIndex].leftNode = copiedNodes[removeIndex].rightNode;
+      else copiedNodes[parentIndex].rightNode = copiedNodes[removeIndex].rightNode;
+      copiedNodes[removeNode.rightNode!].parentNode = removeNode.parentNode;
     }
-
     // case 4: node to be removed doesn't have any children
     else {
-      if (isLeftNode) copiedNodes[parentNode].leftNode = null;
-      else copiedNodes[parentNode].rightNode = null;
+      console.log("Case 4")
+      if (isLeftNode) copiedNodes[parentIndex].leftNode = null;
+      else copiedNodes[parentIndex].rightNode = null;
     }
-    setNodes(copiedNodes);
+    replaceNodes(copiedNodes);
   };
-
-  useEffect(() => {
-    if (nodes.length == 0) return;
-    animateInsert(nodes[nodes.length - 1]);
-    if (isAnimationActive) setIsAnimating(true);
-  }, [nodes]);
-
-  useEffect(() => console.log(isAnimating), [isAnimating]);
-
-  useEffect(() => {
-    if (isAnimationActive) {
-      setDelay(1);
-      setDuration(0.5);
-      setStrokeColor("#FF5733");
-    } else {
-      setDelay(0);
-      setDuration(0);
-      setStrokeColor("#000000");
-    }
-  }, [isAnimationActive]);
 
   const onInsertInputPress = (e: any) => {
     if (e.key == "Enter") {
       if (!isNaN(e.target.value)) {
-        insertNode((e.target.value *= 1), rootNode, 1, 2 ** MAX_DEPTH, [
-          rootNode,
-        ]);
+        insertNode(e.target.value *= 1);
         e.target.value = "";
       }
     }
@@ -372,7 +318,7 @@ export default function BinarySearchTree() {
   const onRemoveInputPress = (e: any) => {
     if (e.key == "Enter") {
       if (!isNaN(e.target.value)) {
-        removeNodeInBST(e.target.value);
+        removeNode(e.target.value);
         e.target.value = "";
       }
     }
@@ -381,7 +327,6 @@ export default function BinarySearchTree() {
   const reset = () => {
     setNodes([]);
     setInsertNodePath([0]);
-    initGaps();
   };
 
   const circleControl = useAnimationControls();
@@ -459,16 +404,16 @@ export default function BinarySearchTree() {
       stroke: insertNodePath.includes(idx) ? strokeColor : "#000000",
       opacity: [idx + 1 == nodes.length ? 0 : 1, 1],
       cx: [
-        idx + 1 == nodes.length && nodes[nodes[idx].parentNode]?.left
-          ? nodes[nodes[idx].parentNode].left
-          : nodes[idx].left,
-        nodes[idx].left,
+        idx + 1 == nodes.length && nodes[nodes[idx].parentNode]?.position.left
+          ? nodes[nodes[idx].parentNode].position.left
+          : nodes[idx].position.left,
+        nodes[idx].position.left,
       ],
       cy: [
-        idx + 1 == nodes.length && nodes[nodes[idx].parentNode]?.top
-          ? nodes[nodes[idx].parentNode].top
-          : nodes[idx].top,
-        nodes[idx].top,
+        idx + 1 == nodes.length && nodes[nodes[idx].parentNode]?.position.top
+          ? nodes[nodes[idx].parentNode].position.top
+          : nodes[idx].position.top,
+        nodes[idx].position.top,
       ],
 
       transition: {
@@ -499,19 +444,17 @@ export default function BinarySearchTree() {
     <Wrapper>
       <Main>
         <BSTBoard
-          svgRef={svgRef}
           boardRef={boardRef}
           nodes={nodes}
           leftLineControl={leftLineControl}
           rightLineControl={rightLineControl}
           circleControl={circleControl}
           textControl={textControl}
+          YGAP={YGAP}
         />
         <BSTController
           onInsertInputPress={(e: any) => onInsertInputPress(e)}
           onRemoveInputPress={(e: any) => onRemoveInputPress(e)}
-          insertInput={insertInput}
-          removeInput={removeInput}
           reset={() => reset()}
           isAnimationActive={isAnimationActive}
           setIsAnimationActive={(b: any) => setIsAnimationActive(b)}
@@ -519,12 +462,10 @@ export default function BinarySearchTree() {
           setIsModalOpen={setIsModalOpen}
         />
       </Main>
-
       <ExportModal
         boardRef={boardRef}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
-        onExport={onExport}
       />
     </Wrapper>
   );

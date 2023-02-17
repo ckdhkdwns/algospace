@@ -5,7 +5,7 @@ import {
   useAnimation,
   useAnimationControls,
 } from "framer-motion";
-import { Ref } from "react";
+import { Ref, useEffect, useState } from "react";
 import { Node } from "interfaces/types";
 import LeftLine from "./elements/leftLine";
 import RightLine from "./elements/rightLine";
@@ -19,9 +19,9 @@ const Board = styled.div`
   border-radius: 10px;
   position: relative;
 `;
-const Svg = styled(motion.svg)`
+const Svg = styled(motion.svg)<{maxHeight:number}>`
   width: 100%;
-  height: 100%;
+  height: ${props => props.maxHeight + "px"};
 `;
 
 type BSTBoardProps = {
@@ -31,7 +31,7 @@ type BSTBoardProps = {
   textControl: AnimationControls;
   rightLineControl: AnimationControls;
   leftLineControl: AnimationControls;
-  svgRef: Ref<SVGElement>;
+  YGAP: number;
 };
 
 export default function BSTBoard({
@@ -41,14 +41,28 @@ export default function BSTBoard({
   textControl,
   leftLineControl,
   rightLineControl,
-  svgRef
+  YGAP,
 }: BSTBoardProps) {
+  const [maxHeight, setMaxHeight] = useState(0);
+
+  useEffect(() => {  // svg 높이 맞춤 
+    let max = 0;
+    nodes.map(node => {
+      if(!node.removed && node.depth > max) max = node.depth;
+    });
+    setMaxHeight((max + 1) * YGAP);
+  }, [nodes]);
+
+  useEffect(() => {
+    console.log(maxHeight);
+  }, [maxHeight]);
+
   const strokeColor = "#FF5733";
   return (
-    <Board id="board" ref={boardRef}>
-      <Svg>
+    <Board ref={boardRef}>
+      <Svg maxHeight={maxHeight}>
         {nodes.map((node, idx) => {
-          if (!node.active) return null;
+          if (node.removed) return null;
           return (
             <g>
               <LeftLine 
@@ -69,7 +83,7 @@ export default function BSTBoard({
           );
         })}
         {nodes.map((node, idx) => {
-          if (!node.active) return null;
+          if (node.removed) return null;
           return (
             <BSTNode 
               idx={idx}

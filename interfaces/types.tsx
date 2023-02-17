@@ -7,13 +7,11 @@ export type Node = {
 
   depth: number;
   
-  top: number;
-  left: number;
-  active: boolean;
+  position: Position;
+  removed: boolean;
 };
 
 export type Position = {
-  index: number;
   top: number;
   left: number;
 };

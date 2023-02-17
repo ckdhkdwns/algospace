@@ -40,8 +40,8 @@ export default function BSTNode({ idx, strokeColor, circleControl, textControl, 
           animate={textControl}
           transition={{ delay: 0.3, duration: 0.5 }}
           id={"text" + idx}
-          x={node.left}
-          y={node.top + 2}
+          x={node.position.left}
+          y={node.position.top + 2}
         >
           {node.value}
         </Text>

@@ -167,33 +167,22 @@ const ExportButton = styled.button`
 type BSTControllerProps = {
   onInsertInputPress: Function;
   onRemoveInputPress: Function;
-  insertInput: Ref<HTMLInputElement>;
-  removeInput: Ref<HTMLInputElement>;
   reset: Function;
   isAnimationActive: Boolean;
   setIsAnimationActive: Function;
   isAnimating: Boolean;
-  setIsModalOpen: Function
+  setIsModalOpen: Function;
 };
 
 export default function BSTController({
   onInsertInputPress,
   onRemoveInputPress,
-  insertInput,
-  removeInput,
   reset,
   isAnimationActive,
   setIsAnimationActive,
   isAnimating,
-  setIsModalOpen
+  setIsModalOpen,
 }: BSTControllerProps) {
-
-  useEffect(() => {
-    if(isAnimating) {
-      insertInput
-    }
-  }, [isAnimating])
-
   return (
     <Wrapper>
       <Header>
@@ -215,9 +204,7 @@ export default function BSTController({
           <InputTitle>Insert</InputTitle>
           <InsertInput
             // placeholder="Value"
-            onKeyPress={(e) => onInsertInputPress(e)}
-            ref={insertInput}
-            
+            onKeyPress={(e) => onInsertInputPress(e)}          
             disabled={isAnimating ? true : false}
           />
         </Insert>
@@ -227,7 +214,6 @@ export default function BSTController({
             disabled={isAnimating ? true : false}
             // placeholder="Value"
             onKeyPress={(e) => onRemoveInputPress(e)}
-            ref={removeInput}
           />
         </Remove>
         <Divider />
