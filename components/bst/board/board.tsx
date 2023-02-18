@@ -24,23 +24,24 @@ const Svg = styled(motion.svg)<{maxHeight:number}>`
   height: ${props => props.maxHeight + "px"};
 `;
 
+type Controls = {
+  circle: AnimationControls,
+  leftLine: AnimationControls,
+  rightLine: AnimationControls,
+  text: AnimationControls
+}
+
 type BSTBoardProps = {
   boardRef: Ref<HTMLDivElement>;
   nodes: Node[];
-  circleControl: AnimationControls;
-  textControl: AnimationControls;
-  rightLineControl: AnimationControls;
-  leftLineControl: AnimationControls;
+  controls: Controls;
   YGAP: number;
 };
 
 export default function BSTBoard({
   boardRef,
   nodes,
-  circleControl,
-  textControl,
-  leftLineControl,
-  rightLineControl,
+  controls,
   YGAP,
 }: BSTBoardProps) {
   const [maxHeight, setMaxHeight] = useState(0);
@@ -70,14 +71,14 @@ export default function BSTBoard({
                 node={node}
                 idx={idx}
                 strokeColor={strokeColor}
-                leftLineControl={leftLineControl}
+                leftLineControl={controls.leftLine}
               />
               <RightLine 
                 nodes={nodes}
                 node={node}
                 idx={idx}
                 strokeColor={strokeColor}
-                rightLineControl={rightLineControl}
+                rightLineControl={controls.rightLine}
               />
             </g>
           );
@@ -88,8 +89,8 @@ export default function BSTBoard({
             <BSTNode 
               idx={idx}
               strokeColor={strokeColor}
-              circleControl={circleControl}
-              textControl={textControl}
+              circleControl={controls.circle}
+              textControl={controls.text}
               node={node}
             />
           );
