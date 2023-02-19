@@ -5,11 +5,13 @@ import {
   useAnimation,
   useAnimationControls,
 } from "framer-motion";
-import { Ref, useEffect, useState } from "react";
+import { Ref, RefObject, useEffect, useState } from "react";
 import { Node } from "interfaces/types";
 import LeftLine from "./elements/leftLine";
 import RightLine from "./elements/rightLine";
 import BSTNode from "./elements/node";
+import useGaps from "@/utils/hooks/useGaps";
+import { debounce } from "@mui/material";
 
 const Board = styled.div`
   display: flex;
@@ -24,7 +26,7 @@ const Svg = styled(motion.svg)<{maxHeight:number}>`
   height: ${props => props.maxHeight + "px"};
 `;
 
-type Controls = {
+type BSTControls = {
   circle: AnimationControls,
   leftLine: AnimationControls,
   rightLine: AnimationControls,
@@ -32,20 +34,20 @@ type Controls = {
 }
 
 type BSTBoardProps = {
-  boardRef: Ref<HTMLDivElement>;
+  boardRef: RefObject<HTMLDivElement>;
   nodes: Node[];
-  controls: Controls;
-  YGAP: number;
+  controls: BSTControls;
 };
 
 export default function BSTBoard({
   boardRef,
   nodes,
   controls,
-  YGAP,
 }: BSTBoardProps) {
   const [maxHeight, setMaxHeight] = useState(0);
+  const [ XGAP, YGAP ] = useGaps(boardRef);
 
+  
   useEffect(() => {  // svg 높이 맞춤 
     let max = 0;
     nodes.map(node => {
@@ -53,10 +55,6 @@ export default function BSTBoard({
     });
     setMaxHeight((max + 1) * YGAP);
   }, [nodes]);
-
-  useEffect(() => {
-    console.log(maxHeight);
-  }, [maxHeight]);
 
   const strokeColor = "#FF5733";
   return (

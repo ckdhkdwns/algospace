@@ -1,8 +1,8 @@
 import { Ref, RefObject, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import FileExtensionDropdown from "./fileExtensionDropdown";
 import domtoimage from 'dom-to-image';
 import { saveAs } from 'file-saver';
+import Dropdown from "@/components/public/dropdown";
 
 const Wrapper = styled.div<{ isModalOpen: boolean }>`
     display: ${props => props.isModalOpen ? "flex" : "none"};
@@ -148,10 +148,11 @@ export default function ExportModal({
         </FileName>
         <FileExtension>
           <InputTitle>Extension</InputTitle>
-          <FileExtensionDropdown
-            selectedExtension={selectedExtension}
-            setSelectedExtension={setSelectedExtension}
-          ></FileExtensionDropdown>
+          <Dropdown
+            selectedItem={selectedExtension}
+            setSelectedItem={setSelectedExtension}
+            items={["PNG", "JPEG", "SVG"]}
+          ></Dropdown>
         </FileExtension>
         <ExportButton onClick={() => exportImage(nameRef.current?.value, selectedExtension)}>Export</ExportButton>
       </Modal>

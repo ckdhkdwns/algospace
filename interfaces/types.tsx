@@ -1,3 +1,5 @@
+import { AnimationControls } from "framer-motion";
+
 export type Node = {
   value: number;
   
@@ -15,3 +17,10 @@ export type Position = {
   top: number;
   left: number;
 };
+
+export type BSTControls = {
+  circle: AnimationControls,
+  leftLine: AnimationControls,
+  rightLine: AnimationControls,
+  text: AnimationControls
+}

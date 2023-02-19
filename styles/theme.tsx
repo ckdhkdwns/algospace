@@ -11,9 +11,16 @@ export const theme = {
 
         brightRed: "#FF5733",
         red: "#E53935",
-        blue: "#1E88E5",
-        brightBlue: "#64B5F6",
-        translucentBlue: "#64B5F6af"
+
+        blue: "#2E86C1",
+        brightBlue: "#5DADE2",
+        translucentBlue: "#5DADE2af",
+
+        green: "#17A589",
+        brightGreen: "#48C9B0",
+        translucentGreen: "#48C9B0af",
+
+        
     },
     borderRadius: {
         small: "5px",

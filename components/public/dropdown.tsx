@@ -3,8 +3,6 @@ import { motion, MotionProps, useReducedMotion } from "framer-motion";
 import styled from "styled-components";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
-
-
 const Wrapper = styled(motion.div)``;
 const DropdownButton = styled.button<{ isOpen: Boolean }>`
   all: unset;
@@ -36,93 +34,102 @@ const DropdownButton = styled.button<{ isOpen: Boolean }>`
     top: 50%;
     transform: translate(0, -50%);
     fill: ${(props) => props.theme.colors.gray400};
-    transform-origin : 50% 25%;
-    transform: ${(props) => props.isOpen ? "rotate(180deg)" : null};
+    transform-origin: 50% 25%;
+    transform: ${(props) => (props.isOpen ? "rotate(180deg)" : null)};
   }
 `;
 
 const ItemsWrapper = styled(motion.div)`
-    position: relative;
-`
+  position: relative;
+`;
 const Items = styled.div`
-    width: 100%;
-    position: absolute;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    background: ${(props) => props.theme.colors.white};
-    border-radius: 10px;
-    top: 5px;
-    border: 1px solid ${(props) => props.theme.colors.gray200};
-    box-sizing: border-box;
-`
-const Item = styled.div<{ seq: number }>`
-    position: relative;
-    font-size: 18px;
-    width: 100%;
-    padding: 8px;
-    background: ${(props) => props.theme.colors.white};
-    box-sizing: border-box;
-    border-radius: 10px;
-    cursor: pointer;
-    color: ${(props) => props.theme.colors.gray400};
-    &:hover {
-        background: #64b5f647;
-        color: ${(props) => props.theme.colors.blue};
-    }
-`
-
+  width: 100%;
+  position: absolute;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: ${(props) => props.theme.colors.white};
+  border-radius: 10px;
+  top: 5px;
+  border: 1px solid ${(props) => props.theme.colors.gray200};
+  box-sizing: border-box;
+`;
+const Item = styled.div`
+  position: relative;
+  font-size: 18px;
+  width: 100%;
+  padding: 8px;
+  background: ${(props) => props.theme.colors.white};
+  box-sizing: border-box;
+  border-radius: 10px;
+  cursor: pointer;
+  color: ${(props) => props.theme.colors.gray400};
+  &:hover {
+    background: #64b5f647;
+    color: ${(props) => props.theme.colors.blue};
+  }
+`;
 
 type DropdownProps = {
-    selectedItem: string,
-    setSelectedItem: Function,
-}
+  selectedItem: string;
+  setSelectedItem: Function;
+  items: string[];
+};
 export default function Dropdown({
-    selectedItem, setSelectedItem
+  selectedItem,
+  setSelectedItem,
+  items,
 }: DropdownProps) {
-    const [isOpen, setIsOpen] = useState(false);
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
-    };
-    const subMenuAnimate = {
-        enter: {
-            opacity: 1,
-            rotateX: 0,
-            transition: {
-                duration: 0.2
-            },
-            display: "block"
-        },
-        exit: {
-            opacity: 0,
-            rotateX: -15,
-            transition: {
-                duration: 0.2,
-                delay: 0
-            },
-            transitionEnd: {
-                display: "none"
-            }
-        }
-    };
-    return (
-        <Wrapper>
-            <DropdownButton 
-                onBlur={() => setIsOpen(false)}
-                onMouseDown={toggleMenu} isOpen={isOpen}>{selectedItem}<MdKeyboardArrowDown /></DropdownButton>
-            <ItemsWrapper
-                className="sub-menu"
-                initial="exit"
-                animate={isOpen ? "enter" : "exit"}
-                variants={subMenuAnimate}
-            >
-                <Items>
-                <Item seq={1} onClick={() => setSelectedItem("PNG")}>PNG</Item>
-                    <Item seq={2} onClick={() => setSelectedItem("JPEG")}>JPEG</Item>
-                    <Item seq={3} onClick={() => setSelectedItem("SVG")}>SVG</Item>
-                </Items>   
-            </ItemsWrapper>
-        </Wrapper>
-    )
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+  const subMenuAnimate = {
+    enter: {
+      opacity: 1,
+      rotateX: 0,
+      transition: {
+        duration: 0.2,
+      },
+      display: "block",
+    },
+    exit: {
+      opacity: 0,
+      rotateX: -15,
+      transition: {
+        duration: 0.2,
+        delay: 0,
+      },
+      transitionEnd: {
+        display: "none",
+      },
+    },
+  };
+  return (
+    <Wrapper>
+      <DropdownButton
+        onBlur={() => setIsOpen(false)}
+        onMouseDown={toggleMenu}
+        isOpen={isOpen}
+      >
+        {selectedItem}
+        <MdKeyboardArrowDown />
+      </DropdownButton>
+      <ItemsWrapper
+        className="sub-menu"
+        initial="exit"
+        animate={isOpen ? "enter" : "exit"}
+        variants={subMenuAnimate}
+      >
+        <Items>
+          {items.map((item, idx) => (
+            <Item onClick={() => setSelectedItem(item)}>
+              {item}
+            </Item>
+          ))}
+        </Items>
+      </ItemsWrapper>
+    </Wrapper>
+  );
 }

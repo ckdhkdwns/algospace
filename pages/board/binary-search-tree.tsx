@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef, RefObject, Ref } from "react";
 import styled from "styled-components";
-import { useAnimationControls } from "framer-motion";
+import { AnimationControls, useAnimationControls } from "framer-motion";
 import { Node, Position } from "interfaces/types";
 import { NonEmptyArray } from "interfaces/interfaces";
-import BSTController from "@/components/bst/controller";
+import BSTController from "@/components/bst/controller/controller";
 import BSTBoard from "@/components/bst/board/board";
 
 import ExportModal from "@/components/bst/exportModal/exportModal";
@@ -13,6 +13,7 @@ import useAnimationValues from "@/utils/hooks/useAnimationValues";
 import { MdArrowBack } from "react-icons/md";
 import useBST from "@/utils/hooks/useBST";
 import useInput from "@/utils/hooks/useInput";
+import useInsertNodeAnimation from "@/utils/hooks/useInsertNodeAnimation";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -47,150 +48,37 @@ export default function BinarySearchTree() {
     insertPath 
   } =
     useBST(boardRef);
-  const [windowSize, setWindowSize] = useState({});
-  const [XGAP, YGAP] = useGaps(boardRef, windowSize);
+  
+  const [XGAP, YGAP] = useGaps(boardRef);
 
   const [isAnimating, setIsAnimating] = useState(false);
   const [isAnimationActive, setIsAnimationActive] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [delay, duration, strokeColor] = useAnimationValues(isAnimationActive);
-  const onInsertInputPress = useInput(insertNode);
-  const onRemoveInputPress = useInput(removeNode);
-  
   const controls = {
     circle: useAnimationControls(),
     leftLine: useAnimationControls(),
     rightLine: useAnimationControls(),
     text: useAnimationControls()
   }
+  const animateInsert = useInsertNodeAnimation({
+    nodes: nodes, 
+    insertPath: insertPath, 
+    controls: controls,
+    isAnimationActive: isAnimationActive 
+  });
 
+  const onInsertInputPress = useInput(insertNode);
+  const onRemoveInputPress = useInput(removeNode);
+  
   useEffect(() => {
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-    
-    const handleResize = debounce(() => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    }, 500);
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (nodes.length !== 0) replaceNodes(nodes);
+    if(nodes.length !== 0) replaceNodes(nodes);
   }, [XGAP, YGAP]);
-
+  
   useEffect(() => {
     if (nodes.length == 0) return;
     animateInsert(nodes[nodes.length - 1]);
-    if (isAnimationActive) setIsAnimating(true);
   }, [nodes]);
-
-  const colorElementsToDefault = async (
-    duration: number,
-    delay: number,
-  ) => {
-    Object.values(controls).forEach((control, idx) => {
-      if(idx == 3) return;
-      control.start(idx => ({
-        stroke: "#000000",
-        transition: { duration: duration, delay: delay },  
-      }))
-    })
-  };
-
-  const animateLines = () => {
-    controls.leftLine.start((idx: number) => ({
-      stroke: insertPath.includes(nodes[idx].leftNode!)
-        ? strokeColor
-        : "#000000",
-      pathLength: 1,
-      transition: {
-        pathLength: {
-          duration: duration,
-          delay: (nodes[idx].depth + 1) * delay,
-        },
-        stroke: { duration: duration, delay: (nodes[idx].depth + 1) * delay },
-      },
-    }));
-    controls.rightLine.start((idx: number) => ({
-      stroke: insertPath.includes(nodes[idx].rightNode!)
-        ? strokeColor
-        : "#000000",
-      pathLength: 1,
-      transition: {
-        pathLength: {
-          duration: duration,
-          delay: (nodes[idx].depth + 1) * delay,
-        },
-        stroke: { duration: duration, delay: (nodes[idx].depth + 1) * delay },
-      },
-    }));
-  };
-
-  const animateTexts = () => {
-    controls.text.start((idx) => ({
-      opacity: 1,
-      transition: {
-        duration: duration,
-        delay:
-          nodes[idx].depth == 0
-            ? nodes[idx].depth * delay
-            : (nodes[idx].depth + duration) * delay,
-      },
-    }));
-  };
-
-  const animateCircles = async (goalDepth: number) => {
-    const limitedDelay = (idx: number) =>
-      goalDepth * delay > nodes[idx].depth * delay
-        ? nodes[idx].depth * delay
-        : goalDepth * delay;
-    await controls.circle.start((idx: number) => ({
-      stroke: insertPath.includes(idx) ? strokeColor : "#000000",
-      opacity: [idx + 1 == nodes.length ? 0 : 1, 1],
-      cx: [
-        idx + 1 == nodes.length && nodes[nodes[idx].parentNode]?.position.left
-          ? nodes[nodes[idx].parentNode].position.left
-          : nodes[idx].position.left,
-        nodes[idx].position.left,
-      ],
-      cy: [
-        idx + 1 == nodes.length && nodes[nodes[idx].parentNode]?.position.top
-          ? nodes[nodes[idx].parentNode].position.top
-          : nodes[idx].position.top,
-        nodes[idx].position.top,
-      ],
-
-      transition: {
-        stroke: { duration: duration, delay: limitedDelay(idx) },
-        cx: { duration: duration, delay: limitedDelay(idx) },
-        cy: { duration: duration, delay: limitedDelay(idx) },
-        opacity: {
-          duration: duration / 5,
-          delay: limitedDelay(idx),
-        },
-      },
-    }));
-  };
-
-  const animateInsert = async (insertNode: Node) => {
-    const goalDepth = insertNode.depth;
-
-    animateLines();
-    animateTexts();
-    await animateCircles(goalDepth);
-
-    await colorElementsToDefault(duration, delay);
-    setIsAnimating(false);
-  };
 
   return (
     <Wrapper>
@@ -199,7 +87,6 @@ export default function BinarySearchTree() {
           boardRef={boardRef}
           nodes={nodes}
           controls={controls}
-          YGAP={YGAP}
         />
         <BSTController
           onInsertInputPress={(e: any) => onInsertInputPress(e)}

@@ -190,15 +190,6 @@ export default function BSTController({
         <Title>BST</Title>
       </Header>
       <Divider />
-      {/* <Slider
-        defaultValue={1}
-        min={0.25}
-        max={4}
-        // getAriaValueText={valuetext}
-        step={null}
-        valueLabelDisplay="auto"
-        marks={marks}
-      /> */}
       <Body isAnimating={isAnimating}>
         <Insert>
           <InputTitle>Insert</InputTitle>
@@ -231,7 +222,6 @@ export default function BSTController({
           </ToggleDescription>
         </ToggleAnimation>
       </Body>
-
       <Footer>
         <Divider />
         <ExportButton onClick={() => setIsModalOpen(true)}>Export</ExportButton>
