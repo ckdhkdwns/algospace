@@ -43,7 +43,7 @@
     width: 300px;
     justify-content: space-between;
     height: 300px;
-    background: #E6DFF1;
+    background: ${(props) => props.theme.colors.translucentBlue};
     border-radius: 20px;
     padding: 28px 38px 38px 38px;
     box-sizing: border-box;
@@ -55,7 +55,7 @@
       
     }
   `
-  const AVLBtn = styled.button`
+  const SortingBtn = styled.button`
     all: unset;
     display: flex;
     flex-direction: column;
@@ -63,7 +63,7 @@
     width: 300px;
     justify-content: space-between;
     height: 300px;
-    background: #F1DFDE;
+    background: ${(props) => props.theme.colors.translucentGreen};
     border-radius: 20px;
     padding: 38px;
     box-sizing: border-box;
@@ -106,13 +106,13 @@
               <BtnSubtitle>Insert and Delete nodes in BST</BtnSubtitle>
             </TitleWrapper>
           </BSTBtn>
-          <AVLBtn onClick={() => { Router.push("/board/sorting") }}>
+          <SortingBtn onClick={() => { Router.push("/board/sorting") }}>
             <Image src="/sorting.svg" alt="bst" width="174" height="174"/>
             <TitleWrapper>
               <BtnTitle>Sorting</BtnTitle>
               <BtnSubtitle>Sort various values</BtnSubtitle>
             </TitleWrapper>
-          </AVLBtn>
+          </SortingBtn>
         </Body>
       </Wrapper>
     )

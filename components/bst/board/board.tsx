@@ -5,11 +5,13 @@ import {
   useAnimation,
   useAnimationControls,
 } from "framer-motion";
-import { Ref, useEffect, useState } from "react";
+import { Ref, RefObject, useEffect, useState } from "react";
 import { Node } from "interfaces/types";
 import LeftLine from "./elements/leftLine";
 import RightLine from "./elements/rightLine";
 import BSTNode from "./elements/node";
+import useGaps from "@/utils/hooks/useGaps";
+import { debounce } from "@mui/material";
 
 const Board = styled.div`
   display: flex;
@@ -24,27 +26,28 @@ const Svg = styled(motion.svg)<{maxHeight:number}>`
   height: ${props => props.maxHeight + "px"};
 `;
 
+type BSTControls = {
+  circle: AnimationControls,
+  leftLine: AnimationControls,
+  rightLine: AnimationControls,
+  text: AnimationControls
+}
+
 type BSTBoardProps = {
-  boardRef: Ref<HTMLDivElement>;
+  boardRef: RefObject<HTMLDivElement>;
   nodes: Node[];
-  circleControl: AnimationControls;
-  textControl: AnimationControls;
-  rightLineControl: AnimationControls;
-  leftLineControl: AnimationControls;
-  YGAP: number;
+  controls: BSTControls;
 };
 
 export default function BSTBoard({
   boardRef,
   nodes,
-  circleControl,
-  textControl,
-  leftLineControl,
-  rightLineControl,
-  YGAP,
+  controls,
 }: BSTBoardProps) {
   const [maxHeight, setMaxHeight] = useState(0);
+  const [ XGAP, YGAP ] = useGaps(boardRef);
 
+  
   useEffect(() => {  // svg 높이 맞춤 
     let max = 0;
     nodes.map(node => {
@@ -52,10 +55,6 @@ export default function BSTBoard({
     });
     setMaxHeight((max + 1) * YGAP);
   }, [nodes]);
-
-  useEffect(() => {
-    console.log(maxHeight);
-  }, [maxHeight]);
 
   const strokeColor = "#FF5733";
   return (
@@ -70,14 +69,14 @@ export default function BSTBoard({
                 node={node}
                 idx={idx}
                 strokeColor={strokeColor}
-                leftLineControl={leftLineControl}
+                leftLineControl={controls.leftLine}
               />
               <RightLine 
                 nodes={nodes}
                 node={node}
                 idx={idx}
                 strokeColor={strokeColor}
-                rightLineControl={rightLineControl}
+                rightLineControl={controls.rightLine}
               />
             </g>
           );
@@ -88,8 +87,8 @@ export default function BSTBoard({
             <BSTNode 
               idx={idx}
               strokeColor={strokeColor}
-              circleControl={circleControl}
-              textControl={textControl}
+              circleControl={controls.circle}
+              textControl={controls.text}
               node={node}
             />
           );
