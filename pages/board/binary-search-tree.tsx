@@ -28,12 +28,12 @@ const Main = styled.div`
   position: relative;
   background-color: ${(props) => props.theme.colors.white};
   border-radius: ${(props) => props.theme.borderRadius.medium};
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   width: 90%;
   height: 90vh;
   margin: auto auto;
   box-sizing: border-box;
+  border: 1px solid ${(props) => props.theme.colors.gray200};
 `;
 
 export default function BinarySearchTree() {
