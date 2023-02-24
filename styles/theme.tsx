@@ -1,5 +1,5 @@
 /*  colors import from https://htmlcolorcodes.com/ */
-
+/* themes https://dribbble.com/shots/9182168-Categories-DailyUI-day099 */
 export const theme = {
     colors: {
         white: "#ffffff",
@@ -10,8 +10,10 @@ export const theme = {
         black: "#222222",
 
         brightRed: "#FF5733",
-        red: "#E53935",
+        
 
+        red: "#EC7063",
+        
         blue: "#2E86C1",
         brightBlue: "#5DADE2",
         translucentBlue: "#5DADE2af",

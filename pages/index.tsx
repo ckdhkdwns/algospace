@@ -1,12 +1,7 @@
-import Head from "next/head";
-import { Inter } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
 import styled from "styled-components";
-import Router from "next/router";
-import Image from "next/image";
 import { motion } from "framer-motion";
-
-const inter = Inter({ subsets: ["latin"] });
+import LinkBtn from "@/components/index/linkBtn";
 
 const Wrapper = styled.div`
   margin: 0px auto;
@@ -21,7 +16,7 @@ const Header = styled.div``;
 const Title = styled(motion.div)`
   width: 100%;
   font-weight: 700;
-  font-size: 70px;
+  font-size: 50px;
 `;
 const Subtitle = styled(motion.div)`
   width: 100%;
@@ -37,66 +32,44 @@ const Body = styled(motion.div)`
   margin-top: 15vh;
   height: fit-content;
 `;
-const BodyTitle = styled.div`
-  font-size: 18px;
-  margin: 0 0 20px 10px;
-  color: #6f6f6f;
-`;
 const Items = styled.div`
   display: flex;
-  gap: 30px;
+  gap: 40px;
   justify-content: center;
-`;
-const Btn = styled.button`
-  all: unset;
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  width: 300px;
-  min-width: 300px;
-  justify-content: space-between;
-  height: 320px;
-  border-radius: 10px;
-  padding-top: 25px;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-  box-sizing: border-box;
-  transition: 0.2s all;
-  & img {
-    margin: 0px auto;
-  }
-  &:hover {
-    transform: scale(0.95);
-  }
-`;
-const BSTBtn = styled(Btn)`
-  background: #5dade272;
-`;
-const SortingBtn = styled(Btn)`
-  background: #48c9b072;
-  &:hover {
-  }
-`;
-
-const BtnTitle = styled.div`
-  font-size: 20px;
-  font-weight: 500;
-`;
-
-const BtnSubtitle = styled.div`
-  margin-top: 5px;
-  text-align: left;
-  font-size: 13px;
-  color: #282828;
-`;
-
-const TitleWrapper = styled.div`
-  background: #ffffff;
-  padding: 15px 15px 20px 20px;
-  box-sizing: border-box;
-  border-radius: 0 0 10px 10px;
 `;
 
 export default function Home() {
+  const items = [{
+    title: "Binary Search Tree",
+    destinationLink: "/board/binary-search-tree",
+    imagePath: "/bst-mini.svg",
+    description: "Tree structure with nodes having at most two children, where left subtree is smaller and right subtree is larger, for efficient data manipulation.",
+    backgroundColor: "#5dade272",
+    imageSize: {
+      width: 55,
+      height: 55
+    }
+  }, {
+    title: "Sorting",
+    destinationLink: "/board/sorting",
+    imagePath: "/sorting-mini.svg",
+    description: "Process of arranging a collection of items in a specific order. The goal is to arrange the items in ascending or descending order based on a specific criterion.",
+    backgroundColor: "#48c9b072",
+    imageSize: {
+      width: 50,
+      height: 50
+    }
+  }, {
+    title: "Graph Traversal",
+    destinationLink: "/board/graph-traversal",
+    imagePath: "/graph-mini.svg",
+    description: "Process of systematically visiting every vertex and edge in a graph using algorithms like DFS or BFS, to analyze and understand the relationships between them. ",
+    backgroundColor: "#F1948Aaf",
+    imageSize: {
+      width: 54,
+      height: 54
+    }
+  }]
   return (
     <Wrapper>
       <Header>
@@ -105,14 +78,14 @@ export default function Home() {
           animate={{ x: "0%", opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          DSAV
+          VisualizeMe
         </Title>
         <Subtitle
           initial={{ x: "-10%", opacity: 0 }}
           animate={{ x: "0%", opacity: 1 }}
           transition={{ duration: 1, delay: 0.6 }}
         >
-          Visualize various data structures and algorithms.
+          Experience Algorithms Through Visuals
         </Subtitle>
       </Header>
       <Body
@@ -120,52 +93,10 @@ export default function Home() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1.9 }}
       >
-        {/* <BodyTitle>Visualizers</BodyTitle> */}
         <Items>
-          <BSTBtn
-            onClick={() => {
-              Router.push("/board/binary-search-tree");
-            }}
-          >
-            <Image src="/bst.svg" alt="bst" width="170" height="170" />
-            <TitleWrapper>
-              <BtnTitle>Binary Search Tree</BtnTitle>
-              <BtnSubtitle>Insert and Delete nodes in BST</BtnSubtitle>
-            </TitleWrapper>
-          </BSTBtn>
-          <SortingBtn
-            onClick={() => {
-              Router.push("/board/sorting");
-            }}
-          >
-            <Image src="/sorting.svg" alt="bst" width="174" height="174" />
-            <TitleWrapper>
-              <BtnTitle>Sorting</BtnTitle>
-              <BtnSubtitle>Sort various values</BtnSubtitle>
-            </TitleWrapper>
-          </SortingBtn>
-          <SortingBtn
-            onClick={() => {
-              Router.push("/board/sorting");
-            }}
-          >
-            <Image src="/sorting.svg" alt="bst" width="174" height="174" />
-            <TitleWrapper>
-              <BtnTitle>Sorting</BtnTitle>
-              <BtnSubtitle>Sort various values</BtnSubtitle>
-            </TitleWrapper>
-          </SortingBtn>
-          <SortingBtn
-            onClick={() => {
-              Router.push("/board/sorting");
-            }}
-          >
-            <Image src="/sorting.svg" alt="bst" width="174" height="174" />
-            <TitleWrapper>
-              <BtnTitle>Sorting</BtnTitle>
-              <BtnSubtitle>Sort various values</BtnSubtitle>
-            </TitleWrapper>
-          </SortingBtn>
+          {items.map(item => {
+            return <LinkBtn {...item} />
+          })}
         </Items>
       </Body>
     </Wrapper>

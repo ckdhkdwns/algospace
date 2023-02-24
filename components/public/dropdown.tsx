@@ -3,14 +3,18 @@ import { motion, MotionProps, useReducedMotion } from "framer-motion";
 import styled from "styled-components";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
+type Colors = {
+  main: string;
+  sub: string;
+}
 const Wrapper = styled(motion.div)``;
-const DropdownButton = styled.button<{ isOpen: Boolean }>`
+const DropdownButton = styled.button<{ colors: Colors, isOpen: Boolean }>`
   all: unset;
   position: relative;
   font-size: 18px;
   width: 100%;
   padding: 8px 12px;
-  margin: 35px auto 0px;
+  margin: 0px auto 0px;
   border-radius: ${(props) => props.theme.borderRadius.small};
   background: ${(props) => props.theme.colors.white};
   box-sizing: border-box;
@@ -18,10 +22,10 @@ const DropdownButton = styled.button<{ isOpen: Boolean }>`
   cursor: pointer;
   color: ${(props) => props.theme.colors.black};
   &:focus {
-    outline: 2px solid ${(props) => props.theme.colors.blue};
+    outline: 2px solid ${(props) => props.colors.main};
   }
   &:focus svg {
-    fill: ${(props) => props.theme.colors.blue};
+    fill: ${(props) => props.colors.main};
   }
   &::placeholder {
     color: ${(props) => props.theme.colors.gray300};
@@ -55,7 +59,7 @@ const Items = styled.div`
   border: 1px solid ${(props) => props.theme.colors.gray200};
   box-sizing: border-box;
 `;
-const Item = styled.div`
+const Item = styled.div<{colors: Colors}>`
   position: relative;
   font-size: 18px;
   width: 100%;
@@ -66,20 +70,23 @@ const Item = styled.div`
   cursor: pointer;
   color: ${(props) => props.theme.colors.gray400};
   &:hover {
-    background: #64b5f647;
-    color: ${(props) => props.theme.colors.blue};
+    background: ${(props) => props.colors.sub};
+    color: ${(props) => props.colors.main};
   }
 `;
+
 
 type DropdownProps = {
   selectedItem: string;
   setSelectedItem: Function;
   items: string[];
+  colors: Colors
 };
 export default function Dropdown({
   selectedItem,
   setSelectedItem,
   items,
+  colors
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => {
@@ -112,6 +119,7 @@ export default function Dropdown({
         onBlur={() => setIsOpen(false)}
         onMouseDown={toggleMenu}
         isOpen={isOpen}
+        colors={colors}
       >
         {selectedItem}
         <MdKeyboardArrowDown />
@@ -124,7 +132,7 @@ export default function Dropdown({
       >
         <Items>
           {items.map((item, idx) => (
-            <Item onClick={() => setSelectedItem(item)}>
+            <Item colors={colors} onClick={() => setSelectedItem(item)}>
               {item}
             </Item>
           ))}

@@ -77,6 +77,11 @@ const ExportButton = styled.button`
 `;
 
 
+type Colors = {
+  main: string;
+  sub: string;
+}
+
 type ExportModalProps = {
   isModalOpen: boolean,
   setIsModalOpen: Function,
@@ -92,6 +97,10 @@ export default function ExportModal({
   const nameRef = useRef<HTMLInputElement | null>(null);
   const [selectedExtension, setSelectedExtension] = useState("PNG");
 
+  const colors = {
+    main: "#2E86C1",
+    sub: "#5DADE2af"
+  }
   useEffect(() => {
     // 이벤트 핸들러 함수
     const handler = (e:any) => {
@@ -149,6 +158,7 @@ export default function ExportModal({
         <FileExtension>
           <InputTitle>Extension</InputTitle>
           <Dropdown
+            colors={colors}
             selectedItem={selectedExtension}
             setSelectedItem={setSelectedExtension}
             items={["PNG", "JPEG", "SVG"]}
