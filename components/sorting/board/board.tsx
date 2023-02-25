@@ -18,9 +18,13 @@ const Board = styled.div`
   position: relative;
 `;
 
-export default function SortingBoard({}) {
+type SortingBoardProps = {
+  values: number[]
+}
+export default function SortingBoard({values}:SortingBoardProps) {
   return (
     <Board>
+      {...values}
     </Board>
   );
 }

@@ -1,8 +1,10 @@
 import SortingBoard from "@/components/sorting/board/board";
 import SortingController from "@/components/sorting/controller/controller";
+import { motion } from "framer-motion";
+import { useState } from "react";
 import styled from "styled-components";
 
-const Wrapper = styled.div`
+const Wrapper = styled(motion.div)`
   width: 100%;
   margin: auto auto;
   display: flex;
@@ -15,8 +17,8 @@ const Main = styled.div`
   position: relative;
   background-color: ${(props) => props.theme.colors.white};
   border-radius: ${(props) => props.theme.borderRadius.medium};
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  border: 1px solid ${(props) => props.theme.colors.gray200};
   width: 90%;
   height: 90vh;
   margin: auto auto;
@@ -25,11 +27,17 @@ const Main = styled.div`
 
 
 export default function Sorting() {
+  const [ values, setValues ] = useState<number[]>([]);
   return (
-    <Wrapper>
+    <Wrapper
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.3 }}>
       <Main>
-        <SortingBoard></SortingBoard>
-        <SortingController></SortingController>
+        <SortingBoard values={values}></SortingBoard>
+        <SortingController
+          addValue={(n:number) => setValues([...values, n])}
+        ></SortingController>
       </Main>
       
     </Wrapper>

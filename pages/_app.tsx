@@ -1,10 +1,53 @@
-import '@/styles/globals.css'
-import type { AppProps } from 'next/app'
-import { ThemeProvider } from "styled-components";
+import Loading from "@/components/public/loading";
+import "@/styles/globals.css";
+import { AnimatePresence, motion } from "framer-motion";
+import type { AppProps } from "next/app";
+import { Router } from "next/router";
+import { useEffect, useState } from "react";
+import styled, { ThemeProvider } from "styled-components";
 import { theme } from "styles/theme";
+
+const AnimationWrapper = styled(motion.div)`
+  width: 100%;
+  height: 100%;
+`
 export default function App({ Component, pageProps }: AppProps) {
-  
-  return <ThemeProvider theme={theme}>
-    <Component {...pageProps} />
-  </ThemeProvider>
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const start = () => {
+      // NProgress.start();
+      setLoading(true);
+    };
+    const end = () => {
+      // NProgress.done();
+      setLoading(false);
+    };
+
+    Router.events.on("routeChangeStart", start);
+    Router.events.on("routeChangeComplete", end);
+    Router.events.on("routeChangeError", end);
+
+    return () => {
+      Router.events.off("routeChangeStart", start);
+      Router.events.off("routeChangeComplete", end);
+      Router.events.off("routeChangeError", end);
+    };
+  }, []);
+  return (
+    <AnimatePresence>
+      {!loading && (
+        <ThemeProvider theme={theme}>
+          <AnimationWrapper
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Component {...pageProps} />
+          </AnimationWrapper>
+        </ThemeProvider>
+      )}
+    </AnimatePresence>
+  );
 }

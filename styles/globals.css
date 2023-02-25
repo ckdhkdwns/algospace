@@ -5,6 +5,7 @@
 /*  colors import from https://htmlcolorcodes.com/ */
 html {
     height: 100%;
+    overflow: hidden;
 }
 body{
     all: unset;

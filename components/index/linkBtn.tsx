@@ -11,7 +11,7 @@ const Wrapper = styled.button<{ background: string }>`
   width: 350px;
   min-width: 350px;
   justify-content: space-between;
-  height: 350px;
+  height: 400px;
   border-radius: 10px;
   padding-top: 25px;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
@@ -62,11 +62,12 @@ const TitleWrapper = styled.div`
 
 const ImageWrapper = styled.div<{ background: string }>`
   border-radius: 10px;
-  width: 70px;
-  height: 70px;
+  width: 120px;
+  height: 120px;
   min-height: 70px;
-  background: ${props => props.background};
+  /* background: ${props => props.background}; */
   display: flex;
+  margin: 10px auto 30px;
   & img {
     margin: auto auto;
   }
@@ -102,7 +103,7 @@ export default function LinkBtn({
   backgroundColor,
   imageSize
 }: LinkBtnProps) {
-  console.log(imagePath)
+  
   return (
     <Wrapper
       onClick={() => {

@@ -1,3 +1,4 @@
+import { BST_STROKE_COLOR } from "@/interfaces/constants";
 import { BSTControls, Node } from "@/interfaces/types";
 import { AnimationControls } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -17,7 +18,7 @@ type AnimationValues = {
 
 const getAnimationValues = (isAnimationActive: boolean) => {
   if (isAnimationActive)
-    return { delay: 1, duration: 0.5, strokeColor: "#FF5733" };
+    return { delay: 1, duration: 0.5, strokeColor: BST_STROKE_COLOR };
   else return { delay: 0, duration: 0, strokeColor: "#000000" };
 };
 

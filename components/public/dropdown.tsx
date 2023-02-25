@@ -15,7 +15,7 @@ const DropdownButton = styled.button<{ colors: Colors, isOpen: Boolean }>`
   width: 100%;
   padding: 8px 12px;
   margin: 0px auto 0px;
-  border-radius: ${(props) => props.theme.borderRadius.small};
+  border-radius: 10px;
   background: ${(props) => props.theme.colors.white};
   box-sizing: border-box;
   border: 1px solid ${(props) => props.theme.colors.gray200};

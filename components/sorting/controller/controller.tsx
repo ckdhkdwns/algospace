@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Image from "next/image";
 import Dropdown from "@/components/public/dropdown";
 import { useState } from "react";
+import useInput from "@/utils/hooks/useInput";
 
 const Wrapper = styled.div`
   border-left: 1px solid ${(props) => props.theme.colors.gray200};
@@ -38,7 +39,7 @@ const Title = styled.div`
 const ResetButton = styled.button`
   all: unset;
   width: 90%;
-  border-radius: 5px;
+  border-radius: 10px;
   margin: 10px auto;
   height: 45px;
   box-sizing: border-box;
@@ -65,7 +66,35 @@ const Body = styled.div<{ isAnimating: Boolean }>`
   opacity: ${(props) => props.isAnimating ? 0.5 : 1};
   transition: 0.2s all;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 `;
+
+const InsertValue = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+const Input = styled.input`
+  all: unset;
+  font-size: 18px;
+  width: 100%;
+  padding: 8px;
+  margin: 0px auto 0px;
+  border-radius: 10px;
+  background: ${(props) => props.theme.colors.white};
+  box-sizing: border-box;
+  border: 1px solid ${(props) => props.theme.colors.gray200};
+  &:focus {
+    outline: 2px solid ${(props) => props.theme.colors.green};
+  }
+  &::placeholder {
+    color: ${(props) => props.theme.colors.gray300};
+  }
+`;
+
+const InsertInput = styled(Input)``;
 
 const SelectType = styled.div`
   display: flex;
@@ -75,8 +104,22 @@ const Description = styled.div`
   color: #616161;
   margin: 0 0 5px 5px;
 `
-export default function SortingController() {
+const Footer = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 100%;
+`;
+
+type SortingControllerProps = {
+  addValue: Function,
+}
+export default function SortingController({ addValue }:SortingControllerProps) {
   const [selectedItem, setSelectedItem] = useState("Selection");
+  const onInsertPress = useInput(addValue);
   const items = ["Selection", "Insertion", "Bubble", "Merge", "Heap"]
   const colors = {
     main: "#17A589",
@@ -90,6 +133,10 @@ export default function SortingController() {
       </Header>
       <Divider />
       <Body isAnimating={false}> {/* 임시 */}
+        <InsertValue>
+          <Description>Insert</Description>
+          <InsertInput onKeyPress={onInsertPress}/>
+        </InsertValue>
         <SelectType>
           <Description>Type</Description>
           <Dropdown colors={colors} selectedItem={selectedItem} setSelectedItem={setSelectedItem} items={items}/>
@@ -97,7 +144,10 @@ export default function SortingController() {
         
       </Body>
       <Divider />
-      <ResetButton>Reset</ResetButton>
+      <Footer>
+        <ResetButton>Reset</ResetButton>
+      </Footer>
+      
     </Wrapper>
   );
 }

@@ -1,3 +1,4 @@
+import { BST_STROKE_COLOR } from "@/interfaces/constants";
 import { AnimationControls, motion } from "framer-motion";
 import { Node } from "interfaces/types";
 import styled from "styled-components";
@@ -17,16 +18,15 @@ const Text = styled(motion.text)`
 
 type BSTNodeProps = {
     idx: number;
-    strokeColor: string;
     circleControl: AnimationControls;
     textControl: AnimationControls;
     node: Node;
 }
-export default function BSTNode({ idx, strokeColor, circleControl, textControl, node } : BSTNodeProps) {
+export default function BSTNode({ idx, circleControl, textControl, node } : BSTNodeProps) {
     return (<g>
         <Circle
           custom={idx}
-          initial={{ stroke: strokeColor }}
+          initial={{ stroke: BST_STROKE_COLOR }}
           animate={circleControl}
           transition={{
             duration: 0.5,

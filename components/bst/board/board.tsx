@@ -21,7 +21,7 @@ const Board = styled.div`
   border-radius: 10px;
   position: relative;
 `;
-const Svg = styled(motion.svg)<{maxHeight:number}>`
+const Svg = styled(motion.svg)<{ maxHeight:number }>`
   width: 100%;
   height: ${props => props.maxHeight + "px"};
 `;
@@ -47,7 +47,6 @@ export default function BSTBoard({
   const [maxHeight, setMaxHeight] = useState(0);
   const [ XGAP, YGAP ] = useGaps(boardRef);
 
-  
   useEffect(() => {  // svg 높이 맞춤 
     let max = 0;
     nodes.map(node => {
@@ -56,7 +55,10 @@ export default function BSTBoard({
     setMaxHeight((max + 1) * YGAP);
   }, [nodes]);
 
-  const strokeColor = "#FF5733";
+  useEffect(() => {
+    console.log(maxHeight);
+  }, [maxHeight])
+
   return (
     <Board ref={boardRef}>
       <Svg maxHeight={maxHeight}>
@@ -68,14 +70,12 @@ export default function BSTBoard({
                 nodes={nodes}
                 node={node}
                 idx={idx}
-                strokeColor={strokeColor}
                 leftLineControl={controls.leftLine}
               />
               <RightLine 
                 nodes={nodes}
                 node={node}
                 idx={idx}
-                strokeColor={strokeColor}
                 rightLineControl={controls.rightLine}
               />
             </g>
@@ -86,7 +86,6 @@ export default function BSTBoard({
           return (
             <BSTNode 
               idx={idx}
-              strokeColor={strokeColor}
               circleControl={controls.circle}
               textControl={controls.text}
               node={node}

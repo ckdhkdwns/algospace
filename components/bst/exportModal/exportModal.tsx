@@ -35,7 +35,7 @@ const Input = styled.input`
   font-size: 18px;
   width: 100%;
   padding: 8px 12px;
-  margin: 35px auto 0px;
+  margin: 0px auto 0px;
   border-radius: ${(props) => props.theme.borderRadius.small};
   background: ${(props) => props.theme.colors.white};
   box-sizing: border-box;
@@ -48,13 +48,10 @@ const Input = styled.input`
   }
 `;
 const InputTitle = styled.div`
-  position: absolute;
   color: #616161;
-  margin: 8px 3px;
+  margin: 15px 4px 3px 3px;
 `;
 const FileNameInput = styled(Input)`
-`
-const FileExtensionInput = styled(Input)`
 `
 const FileName = styled.div``;
 const FileExtension = styled.div``;

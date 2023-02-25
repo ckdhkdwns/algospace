@@ -1,4 +1,4 @@
-/*  colors import from https://htmlcolorcodes.com/ */
+/*  colors import from https://htmlcolorcodes.com/color-chart/ */
 /* themes https://dribbble.com/shots/9182168-Categories-DailyUI-day099 */
 export const theme = {
     colors: {

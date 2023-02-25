@@ -1,0 +1,1 @@
+export const BST_STROKE_COLOR = "#2E86C1"

@@ -25,7 +25,7 @@ const Input = styled.input`
   width: 90%;
   padding: 8px;
   margin: 35px auto 0px;
-  border-radius: ${(props) => props.theme.borderRadius.small};
+  border-radius: 10px;
   background: ${(props) => props.theme.colors.white};
   box-sizing: border-box;
   border: 1px solid ${(props) => props.theme.colors.gray200};
@@ -82,7 +82,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   background: ${(props) => props.theme.colors.gray100};
-  border-radius: 0 10px 10px 0;
+  border-radius: 0 20px 20px 0;
   position: relative;
 `;
 
@@ -93,7 +93,7 @@ const Body = styled.div<{ isAnimating: Boolean }>`
 const ResetButton = styled.button`
   all: unset;
   width: 90%;
-  border-radius: 5px;
+  border-radius: 10px;
   margin: 10px auto;
   height: 45px;
   box-sizing: border-box;
@@ -149,7 +149,7 @@ const ToggleDescription = styled.div<{ isAnimationActive: Boolean }>`
 const ExportButton = styled.button`
   all: unset;
   width: 90%;
-  border-radius: 5px;
+  border-radius: 10px;
   margin: 10px auto 0px;
   height: 45px;
   box-sizing: border-box;
@@ -157,8 +157,8 @@ const ExportButton = styled.button`
   font-size: 18px;
   transition: 0.2s all;
   background: transparent;
-  color: ${(props) => props.theme.colors.blue};
-  border: 2px solid ${(props) => props.theme.colors.blue};
+  color: #2670a1;
+  border: 2px solid ${(props) => props.theme.colors.translucentBlue};
   cursor: pointer;
   &:hover {
     background: #64b5f647;
