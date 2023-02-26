@@ -35,9 +35,8 @@ const Title = styled.div`
   font-size: 30px;
 `;
 
-
-const ResetButton = styled.button`
-  all: unset;
+const Button = styled.button`
+all: unset;
   width: 90%;
   border-radius: 10px;
   margin: 10px auto;
@@ -52,6 +51,10 @@ const ResetButton = styled.button`
   &:hover {
     background: ${(props) => props.theme.colors.brightGreen};
   }
+`
+
+const ResetButton = styled(Button)`
+  
 `;
 
 const Divider = styled.div`
@@ -94,6 +97,10 @@ const Input = styled.input`
   }
 `;
 
+const SortButton = styled(Button)`
+  width: 100%;
+`
+
 const InsertInput = styled(Input)``;
 
 const SelectType = styled.div`
@@ -116,8 +123,9 @@ const Footer = styled.div`
 
 type SortingControllerProps = {
   addValue: Function,
+  reset: Function
 }
-export default function SortingController({ addValue }:SortingControllerProps) {
+export default function SortingController({ addValue, reset }:SortingControllerProps) {
   const [selectedItem, setSelectedItem] = useState("Selection");
   const onInsertPress = useInput(addValue);
   const items = ["Selection", "Insertion", "Bubble", "Merge", "Heap"]
@@ -141,11 +149,11 @@ export default function SortingController({ addValue }:SortingControllerProps) {
           <Description>Type</Description>
           <Dropdown colors={colors} selectedItem={selectedItem} setSelectedItem={setSelectedItem} items={items}/>
         </SelectType>
-        
+        <SortButton>Sort</SortButton>
       </Body>
       <Divider />
       <Footer>
-        <ResetButton>Reset</ResetButton>
+        <ResetButton onClick={() => reset()}>Reset</ResetButton>
       </Footer>
       
     </Wrapper>

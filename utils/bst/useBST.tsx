@@ -1,6 +1,6 @@
 import { RefObject, useEffect, useState } from "react";
 import { Node, Position } from "interfaces/types";
-import { getNodePosition } from "../bst/getNodePosition";
+import { getNodePosition } from "./getNodePosition";
 import { NonEmptyArray } from "@/interfaces/interfaces";
 
 type BSTProps = {

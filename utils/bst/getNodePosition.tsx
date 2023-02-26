@@ -1,5 +1,5 @@
 import { RefObject } from "react";
-import { getBoardSize } from "./getBoardSize";
+import { getBoardSize } from "../getBoardSize";
 
 export const getNodePosition = (boardRef: RefObject<HTMLDivElement>, directions:string[]) => {
     const depth = directions.length;

@@ -1,7 +1,7 @@
 import SortingBoard from "@/components/sorting/board/board";
 import SortingController from "@/components/sorting/controller/controller";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const Wrapper = styled(motion.div)`
@@ -28,6 +28,10 @@ const Main = styled.div`
 
 export default function Sorting() {
   const [ values, setValues ] = useState<number[]>([]);
+
+  const reset = () => {
+    setValues([]);
+  }
   return (
     <Wrapper
     initial={{ opacity: 0 }}
@@ -37,6 +41,7 @@ export default function Sorting() {
         <SortingBoard values={values}></SortingBoard>
         <SortingController
           addValue={(n:number) => setValues([...values, n])}
+          reset={reset}
         ></SortingController>
       </Main>
       

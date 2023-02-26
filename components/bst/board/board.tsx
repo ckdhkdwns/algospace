@@ -10,7 +10,7 @@ import { Node } from "interfaces/types";
 import LeftLine from "./elements/leftLine";
 import RightLine from "./elements/rightLine";
 import BSTNode from "./elements/node";
-import useGaps from "@/utils/hooks/useGaps";
+import useGaps from "@/utils/bst/useBSTGaps";
 import { debounce } from "@mui/material";
 
 const Board = styled.div`
