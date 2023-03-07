@@ -1,35 +1,45 @@
-import { motion } from "framer-motion"
-import styled from "styled-components"
+import { SORTING_GAP, SORTING_WIDTH } from "@/interfaces/constants";
+import { SortingValue } from "@/interfaces/types";
+import { motion } from "framer-motion";
+import styled from "styled-components";
 
-
-const Wrapper = styled.g``
-const Bar = styled(motion.rect) <{ width: number }> `
-  fill: ${props => props.theme.colors.gray300};
-  width: ${props => props.width + "px"};
-`
+const Wrapper = styled(motion.g)``;
+const Bar = styled(motion.rect)<{ width: number }>`    
+  width: ${(props) => props.width + "px"};
+`;
 
 const Text = styled(motion.text)`
-    transform: scaleY(-1);
-    text-anchor: middle;
-`
+  transform: scaleY(-1);
+  text-anchor: middle;
+`;
 
 type ValueBarProps = {
-    x: number;
-    width: number;
-    height: number;
-    value: number;
-}
+  sortingValue: SortingValue;
+  maxValue: number;
+};
 
-export default function ValueBar({ x, width, height, value }: ValueBarProps) {
-    return <Wrapper>
-        <Bar
-            x={x}
-            y={35}
-            initial={{ height: 0 }}
-            transition={{ height: { duration: 0.4, delay: 0.2 } }}
-            animate={{ height: height*9/10 + "%" }}
-            width={width}
-        ></Bar>
-        <Text x={x + width / 2} y={-10}>{value}</Text>
+export default function ValueBar({ sortingValue, maxValue }: ValueBarProps) {
+  const x = sortingValue.order * (SORTING_WIDTH + SORTING_GAP);
+  return (
+    <Wrapper transition={{ x: { duration: 0.4 } }} animate={{ x: x }}>
+      <Bar
+        y={35}
+        initial={{ height: 0 }}
+        transition={{ height: { duration: 0.4, delay: 0.4 } }}
+        animate={{ 
+          height: (sortingValue.value * 90) / maxValue + "%",
+          fill: (sortingValue.sorted ? "#17A590" : "#BDBDBD")
+         }}
+        width={SORTING_WIDTH}
+
+      ></Bar>
+      <Text 
+      initial={{opacity: 0}}
+      animate={{ opacity: 1 }}
+      transition={{ opacity: {delay: 0.4}}}
+      x={SORTING_WIDTH / 2} y={-10}>
+        {sortingValue.value}
+      </Text>
     </Wrapper>
+  );
 }

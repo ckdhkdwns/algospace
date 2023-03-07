@@ -96,7 +96,7 @@ export default function ExportModal({
 
   const colors = {
     main: "#2E86C1",
-    sub: "#5DADE2af"
+    sub: "#5dade268"
   }
   useEffect(() => {
     // 이벤트 핸들러 함수
@@ -159,6 +159,7 @@ export default function ExportModal({
             selectedItem={selectedExtension}
             setSelectedItem={setSelectedExtension}
             items={["PNG", "JPEG", "SVG"]}
+            direction="down"
           ></Dropdown>
         </FileExtension>
         <ExportButton onClick={() => exportImage(nameRef.current?.value, selectedExtension)}>Export</ExportButton>

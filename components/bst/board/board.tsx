@@ -12,19 +12,22 @@ import RightLine from "./elements/rightLine";
 import BSTNode from "./elements/node";
 import useGaps from "@/utils/bst/useBSTGaps";
 import { debounce } from "@mui/material";
+import Image from "next/image";
+import Router from "next/router";
 
 const Board = styled.div`
   display: flex;
-  width: 85%;
+  width: 100%;
   height: 100%;
   flex-direction: column;
   border-radius: 10px;
   position: relative;
 `;
-const Svg = styled(motion.svg)<{ maxHeight:number }>`
+const Svg = styled(motion.svg) <{ maxHeight: number }>`
   width: 100%;
   height: ${props => props.maxHeight + "px"};
 `;
+
 
 type BSTControls = {
   circle: AnimationControls,
@@ -45,34 +48,31 @@ export default function BSTBoard({
   controls,
 }: BSTBoardProps) {
   const [maxHeight, setMaxHeight] = useState(0);
-  const [ XGAP, YGAP ] = useGaps(boardRef);
+  const [XGAP, YGAP] = useGaps(boardRef);
 
   useEffect(() => {  // svg 높이 맞춤 
     let max = 0;
     nodes.map(node => {
-      if(!node.removed && node.depth > max) max = node.depth;
+      if (!node.removed && node.depth > max) max = node.depth;
     });
     setMaxHeight((max + 1) * YGAP);
   }, [nodes]);
 
-  useEffect(() => {
-    console.log(maxHeight);
-  }, [maxHeight])
-
   return (
     <Board ref={boardRef}>
+      
       <Svg maxHeight={maxHeight}>
         {nodes.map((node, idx) => {
           if (node.removed) return null;
           return (
             <g>
-              <LeftLine 
+              <LeftLine
                 nodes={nodes}
                 node={node}
                 idx={idx}
                 leftLineControl={controls.leftLine}
               />
-              <RightLine 
+              <RightLine
                 nodes={nodes}
                 node={node}
                 idx={idx}
@@ -84,7 +84,7 @@ export default function BSTBoard({
         {nodes.map((node, idx) => {
           if (node.removed) return null;
           return (
-            <BSTNode 
+            <BSTNode
               idx={idx}
               circleControl={controls.circle}
               textControl={controls.text}

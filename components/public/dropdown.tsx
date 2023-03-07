@@ -11,18 +11,19 @@ const Wrapper = styled(motion.div)``;
 const DropdownButton = styled.button<{ colors: Colors, isOpen: Boolean }>`
   all: unset;
   position: relative;
-  font-size: 18px;
+  font-size: 16px;
   width: 100%;
+  height: 40px;
   padding: 8px 12px;
   margin: 0px auto 0px;
   border-radius: 10px;
   background: ${(props) => props.theme.colors.white};
   box-sizing: border-box;
-  border: 1px solid ${(props) => props.theme.colors.gray200};
+  border: 1px solid #cfcfcf;
   cursor: pointer;
   color: ${(props) => props.theme.colors.black};
   &:focus {
-    outline: 2px solid ${(props) => props.colors.main};
+    outline: 1px solid ${(props) => props.colors.main};
   }
   &:focus svg {
     fill: ${(props) => props.colors.main};
@@ -46,16 +47,17 @@ const DropdownButton = styled.button<{ colors: Colors, isOpen: Boolean }>`
 const ItemsWrapper = styled(motion.div)`
   position: relative;
 `;
-const Items = styled.div`
+const Items = styled.div<{ direction: string }>`
   width: 100%;
   position: absolute;
   padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 5px;
+  top: ${props => props.direction == "up" ? "auto" : "5px"};
+  bottom: ${props => props.direction == "up" ? "45px" : "auto"};
   background: ${(props) => props.theme.colors.white};
   border-radius: 10px;
-  top: 5px;
   border: 1px solid ${(props) => props.theme.colors.gray200};
   box-sizing: border-box;
 `;
@@ -80,13 +82,15 @@ type DropdownProps = {
   selectedItem: string;
   setSelectedItem: Function;
   items: string[];
-  colors: Colors
+  colors: Colors,
+  direction: string;
 };
 export default function Dropdown({
   selectedItem,
   setSelectedItem,
   items,
-  colors
+  colors,
+  direction
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => {
@@ -130,7 +134,7 @@ export default function Dropdown({
         animate={isOpen ? "enter" : "exit"}
         variants={subMenuAnimate}
       >
-        <Items>
+        <Items direction={direction}>
           {items.map((item, idx) => (
             <Item colors={colors} onClick={() => setSelectedItem(item)}>
               {item}

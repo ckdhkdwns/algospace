@@ -3,159 +3,157 @@ import Image from "next/image";
 import Dropdown from "@/components/public/dropdown";
 import { useState } from "react";
 import useInput from "@/utils/hooks/useInput";
+import { CgRedo } from "react-icons/cg";
+import { IoPlay } from "react-icons/io5";
 
 const Wrapper = styled.div`
-  border-left: 1px solid ${(props) => props.theme.colors.gray200};
-  width: 15%;
-  height: 100%;
   display: flex;
-  flex-direction: column;
-  background: ${(props) => props.theme.colors.gray100};
-  border-radius: 0 10px 10px 0;
+  background: #efefef;
+  border-radius: 10px;
   position: relative;
-`;
-
-const Header = styled.div`
-  display: flex;
-  width: fit-content;
-  font-size: 20px;
-  font-weight: 700;
-  font-weight: 700;
-
-  margin: 12px 12px 7px 12px;
+  margin: 0 auto 30px;
   gap: 10px;
-  color: ${(props) => props.theme.colors.black};
-
-  img {
-    margin: 10px auto;
-  }
-`;
-const Title = styled.div`
-  line-height: 60px;
-  font-size: 30px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #dadada;
 `;
 
 const Button = styled.button`
-all: unset;
-  width: 90%;
+  all: unset;
+  width: 40px;
   border-radius: 10px;
-  margin: 10px auto;
-  height: 45px;
+  cursor: pointer;
+  display: flex;
+  height: 40px;
+  background: #aae1d6;
   box-sizing: border-box;
   text-align: center;
   font-size: 18px;
-  transition: 0.2s all;
-  background: ${(props) => props.theme.colors.green};
-  color: ${(props) => props.theme.colors.white};
-  cursor: pointer;
-  &:hover {
-    background: ${(props) => props.theme.colors.brightGreen};
+  transition: 0.1s all;
+  svg {
+    width: 75%;
+    height: 75%;
+    margin: auto auto;
+    path {
+      transition: 0.1s all;
+    }
   }
-`
+`;
 
 const ResetButton = styled(Button)`
-  
+  path {
+    fill: ${(props) => props.theme.colors.green};
+  }
+  &:hover {
+    background: ${(props) => props.theme.colors.green};
+    path {
+      fill: #efefef;
+    }
+  }
 `;
-
-const Divider = styled.div`
-  box-sizing: border-box;
-  width: 90%;
-  margin: 0 auto;
-  
-  height: 1px;
-  background: ${(props) => props.theme.colors.gray200};
-`;
-const Body = styled.div<{ isAnimating: Boolean }>`
-  opacity: ${(props) => props.isAnimating ? 0.5 : 1};
-  transition: 0.2s all;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
-
-const InsertValue = styled.div`
-  display: flex;
-  flex-direction: column;
-`
 
 const Input = styled.input`
   all: unset;
   font-size: 18px;
-  width: 100%;
+  margin: auto 0;
+  width: 150px;
+  height: 40px;
   padding: 8px;
-  margin: 0px auto 0px;
-  border-radius: 10px;
-  background: ${(props) => props.theme.colors.white};
   box-sizing: border-box;
-  border: 1px solid ${(props) => props.theme.colors.gray200};
+  border: 1px solid #cfcfcf;
+  background: ${(props) => props.theme.colors.white};
+  border-radius: 10px;
   &:focus {
-    outline: 2px solid ${(props) => props.theme.colors.green};
+    outline: 1px solid ${(props) => props.theme.colors.green};
   }
   &::placeholder {
-    color: ${(props) => props.theme.colors.gray300};
+    color: #7d7d7d;
+    font-size: 16px;
   }
 `;
 
 const SortButton = styled(Button)`
-  width: 100%;
-`
+  svg {
+    width: 65%;
+    height: 65%;
+  }
+  path {
+    fill: ${(props) => props.theme.colors.green};
+  }
+  &:hover {
+    background: ${(props) => props.theme.colors.green};;
+    path {
+      fill: #efefef;
+    }
+  }
+`;
 
 const InsertInput = styled(Input)``;
 
 const SelectType = styled.div`
   display: flex;
   flex-direction: column;
-`
-const Description = styled.div`
-  color: #616161;
-  margin: 0 0 5px 5px;
-`
-const Footer = styled.div`
+  width: 150px;
+`;
+const Form = styled.div`
   display: flex;
-  flex-direction: column;
-  position: absolute;
-  bottom: 0px;
-  left: 50%;
-  transform: translate(-50%, 0);
+  gap: 10px;
   width: 100%;
 `;
 
+const More = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+const Divider = styled.div`
+  width: 1px;
+  height: 100%;
+  background: #CFCFCF;
+`
+
 type SortingControllerProps = {
-  addValue: Function,
-  reset: Function
-}
-export default function SortingController({ addValue, reset }:SortingControllerProps) {
+  addValue: Function;
+  reset: Function;
+  testSorting: Function;
+};
+export default function SortingController({
+  addValue,
+  reset,
+  testSorting,
+}: SortingControllerProps) {
   const [selectedItem, setSelectedItem] = useState("Selection");
   const onInsertPress = useInput(addValue);
-  const items = ["Selection", "Insertion", "Bubble", "Merge", "Heap"]
+  const items = ["Selection", "Insertion", "Bubble", "Merge", "Heap"];
   const colors = {
     main: "#17A589",
-    sub: "#48C9B01f"
-  }
+    sub: "#48C9B01f",
+  };
+
   return (
     <Wrapper>
-      <Header>
-        <Image src="/sorting-mini.svg" alt="bst" width="35" height="35" style={{marginTop: "10px"}}/>
-        <Title>Sorting</Title>
-      </Header>
-      <Divider />
-      <Body isAnimating={false}> {/* 임시 */}
-        <InsertValue>
-          <Description>Insert</Description>
-          <InsertInput onKeyPress={onInsertPress}/>
-        </InsertValue>
+      <Form>
+        <InsertInput placeholder="Insert" onKeyPress={onInsertPress} />
         <SelectType>
-          <Description>Type</Description>
-          <Dropdown colors={colors} selectedItem={selectedItem} setSelectedItem={setSelectedItem} items={items}/>
+          <Dropdown
+            colors={colors}
+            selectedItem={selectedItem}
+            setSelectedItem={setSelectedItem}
+            items={items}
+            direction="up"
+          />
         </SelectType>
-        <SortButton>Sort</SortButton>
-      </Body>
+      </Form>
       <Divider />
-      <Footer>
-        <ResetButton onClick={() => reset()}>Reset</ResetButton>
-      </Footer>
-      
+      <More>
+        <SortButton onClick={() => testSorting()}>
+          <IoPlay />
+        </SortButton>
+        <ResetButton onClick={() => reset()}>
+          
+          <CgRedo />
+        </ResetButton>
+      </More>
     </Wrapper>
   );
 }

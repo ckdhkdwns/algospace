@@ -24,3 +24,9 @@ export type BSTControls = {
   rightLine: AnimationControls,
   text: AnimationControls
 }
+
+export type SortingValue = {
+  value: number;
+  order: number;
+  sorted: boolean;
+}

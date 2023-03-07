@@ -4,165 +4,123 @@ import { Slider } from "@mui/material";
 import { Ref, useEffect, useState, useRef } from "react";
 import { CgRedo } from "react-icons/cg";
 import { GoCheck } from "react-icons/go";
+import { TbFileExport } from "react-icons/tb";
+import { MdAnimation } from "react-icons/md";
+import { IoPlay } from "react-icons/io5";
+
+const Wrapper = styled.div`
+  display: flex;
+  background: #efefef;
+  border-radius: 10px;
+  position: relative;
+  margin: 0 auto 30px;
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #DADADA;
+`;
+
 const Form = styled.div`
   display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  &:focus {
-    background: #bdbdbd;
-  }
-`;
-const Insert = styled(Form)`
-  position: relative;
-`;
-const Remove = styled(Form)`
-  margin-bottom: 15px;
+  gap: 10px;
 `;
 
 const Input = styled.input`
   all: unset;
   font-size: 18px;
-  width: 90%;
+  margin: auto 0;
+  width: 150px;
+  height: 40px;
   padding: 8px;
-  margin: 35px auto 0px;
-  border-radius: 10px;
-  background: ${(props) => props.theme.colors.white};
   box-sizing: border-box;
-  border: 1px solid ${(props) => props.theme.colors.gray200};
+  border: 1px solid #CFCFCF;
+  background: ${(props) => props.theme.colors.white};
+  border-radius: 10px;
   &:focus {
-    outline: 2px solid ${(props) => props.theme.colors.blue};
+    outline: 1px solid ${(props) => props.theme.colors.blue};
   }
   &::placeholder {
-    color: ${(props) => props.theme.colors.gray300};
+    color: #7D7D7D;
+    font-size: 16px;
   }
 `;
 
-const InputTitle = styled.div`
-  position: absolute;
-  color: #616161;
-  margin: 8px 15px;
-`;
 const InsertInput = styled(Input)``;
 
 const RemoveInput = styled(Input)``;
 
-const Header = styled.div`
+
+const Button = styled.button`
+  all: unset;
+  width: 40px;
+  border-radius: 10px;
+  cursor: pointer;
   display: flex;
-  width: fit-content;
-  font-size: 20px;
-  font-weight: 700;
-  font-weight: 700;
-
-  margin: 12px 12px 7px 12px;
-  gap: 10px;
-  color: ${(props) => props.theme.colors.black};
-
-  img {
-    margin: 10px auto;
+  height: 40px;
+  background: #D0E3F0;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 18px;
+  transition: 0.1s all;
+  svg {
+    width: 75%;
+    height: 75%;
+    margin: auto auto;
+    path {
+      transition: 0.1s all;
+    }
   }
 `;
-const Title = styled.div`
-  line-height: 60px;
-  font-size: 30px;
+const ResetButton = styled(Button)`
+  path {
+    fill: ${(props) => props.theme.colors.blue};
+  }
+  &:hover {
+    background: ${(props) => props.theme.colors.blue};
+    path {
+      fill: #efefef;
+    }
+  }
+`;
+
+const ToggleAnimation = styled(Button) <{ isAnimationActive: Boolean }>`
+  cursor: pointer;
+  display: flex;
+  svg {
+    width: 75%;
+    height: 75%;
+    path {
+      color: ${props => props.isAnimationActive ? props.theme.colors.blue : "#999999"}
+    }
+  }
+`;
+
+
+const ExportButton = styled(Button)`
+  svg {
+    width: 70%;
+    height: 70%;
+  }
+  path + path {
+    stroke: ${(props) => props.theme.colors.blue};
+  }
+  &:hover {
+    background: ${(props) => props.theme.colors.blue};;
+    path + path {
+      stroke: #efefef;
+    }
+  }
+`;
+
+const More = styled.div`
+  display: flex;
+  gap: 8px;
 `;
 
 const Divider = styled.div`
-  box-sizing: border-box;
-  width: 90%;
-  margin: 0 auto;
-
-  height: 1px;
-  background: ${(props) => props.theme.colors.gray200};
-`;
-
-const Wrapper = styled.div`
-  border-left: 1px solid ${(props) => props.theme.colors.gray200};
-  width: 15%;
+  width: 1px;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  background: ${(props) => props.theme.colors.gray100};
-  border-radius: 0 20px 20px 0;
-  position: relative;
-`;
-
-const Body = styled.div<{ isAnimating: Boolean }>`
-  opacity: ${(props) => props.isAnimating ? 0.5 : 1};
-  transition: 0.2s all;
-`;
-const ResetButton = styled.button`
-  all: unset;
-  width: 90%;
-  border-radius: 10px;
-  margin: 10px auto;
-  height: 45px;
-  box-sizing: border-box;
-  text-align: center;
-  font-size: 18px;
-  transition: 0.2s all;
-  background: ${(props) => props.theme.colors.blue};
-  color: ${(props) => props.theme.colors.white};
-  cursor: pointer;
-  &:hover {
-    background: ${(props) => props.theme.colors.brightBlue};
-  }
-`;
-const Footer = styled.div`
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  bottom: 0px;
-  left: 50%;
-  transform: translate(-50%, 0);
-  width: 100%;
-`;
-const ToggleAnimation = styled.div`
-  display: flex;
-  width: 90%;
-  margin: 10px auto;
-  gap: 8px;
-`;
-const AnimationCheckBox = styled.input`
-  display: none;
-  & + label {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    margin: auto 0;
-    border: 2px solid ${(props) => props.theme.colors.blue};
-    border-radius: 3px;
-    cursor: pointer;
-    background: url("/check.svg");
-  }
-  &:checked + label {
-    background: transparent;
-    border: 2px solid ${(props) => props.theme.colors.gray300};
-  }
-`;
-const ToggleDescription = styled.div<{ isAnimationActive: Boolean }>`
-  color: ${(props) =>
-    props.isAnimationActive
-      ? props.theme.colors.black
-      : props.theme.colors.gray400};
-`;
-
-const ExportButton = styled.button`
-  all: unset;
-  width: 90%;
-  border-radius: 10px;
-  margin: 10px auto 0px;
-  height: 45px;
-  box-sizing: border-box;
-  text-align: center;
-  font-size: 18px;
-  transition: 0.2s all;
-  background: transparent;
-  color: #2670a1;
-  border: 2px solid ${(props) => props.theme.colors.translucentBlue};
-  cursor: pointer;
-  &:hover {
-    background: #64b5f647;
-  }
+  background: #CFCFCF;
 `
 type BSTControllerProps = {
   onInsertInputPress: Function;
@@ -185,48 +143,35 @@ export default function BSTController({
 }: BSTControllerProps) {
   return (
     <Wrapper>
-      <Header>
-        <Image src="/bst-mini.svg" alt="bst" width="40" height="40" />
-        <Title>BST</Title>
-      </Header>
+      <Form>
+        <InsertInput
+          placeholder="Insert"
+          onKeyPress={(e) => onInsertInputPress(e)}
+          disabled={isAnimating ? true : false}
+        />
+        <RemoveInput
+          disabled={isAnimating ? true : false}
+          placeholder="Remove"
+          onKeyPress={(e) => onRemoveInputPress(e)}
+        />
+      </Form>
       <Divider />
-      <Body isAnimating={isAnimating}>
-        <Insert>
-          <InputTitle>Insert</InputTitle>
-          <InsertInput
-            // placeholder="Value"
-            onKeyPress={(e) => onInsertInputPress(e)}          
-            disabled={isAnimating ? true : false}
-          />
-        </Insert>
-        <Remove>
-          <InputTitle>Remove</InputTitle>
-          <RemoveInput
-            disabled={isAnimating ? true : false}
-            // placeholder="Value"
-            onKeyPress={(e) => onRemoveInputPress(e)}
-          />
-        </Remove>
-        <Divider />
-        <ToggleAnimation>
-          <AnimationCheckBox id="cb1" type="checkbox" 
-          disabled={isAnimating ? true : false}/>
-          <label
-            htmlFor="cb1"
-            onClick={() => {
-              if(!isAnimating) setIsAnimationActive(!isAnimationActive);
-            }}
-          ></label>
-          <ToggleDescription isAnimationActive={isAnimationActive}>
-            Animation
-          </ToggleDescription>
+      <More>
+        <ResetButton onClick={() => reset()}>
+          <CgRedo />
+        </ResetButton>
+        <ToggleAnimation
+          isAnimationActive={isAnimationActive}
+          onClick={() => {
+            if (!isAnimating) setIsAnimationActive(!isAnimationActive);
+          }}
+        >
+          <MdAnimation />
         </ToggleAnimation>
-      </Body>
-      <Footer>
-        <Divider />
-        <ExportButton onClick={() => setIsModalOpen(true)}>Export</ExportButton>
-        <ResetButton onClick={() => reset()}>Reset</ResetButton>
-      </Footer>
+        <ExportButton onClick={() => setIsModalOpen(true)}>
+          <TbFileExport />
+        </ExportButton>
+      </More>
     </Wrapper>
   );
 }

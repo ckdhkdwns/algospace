@@ -1,5 +1,7 @@
 import SortingBoard from "@/components/sorting/board/board";
 import SortingController from "@/components/sorting/controller/controller";
+import { SORTING_GAP, SORTING_WIDTH } from "@/interfaces/constants";
+import { SortingValue } from "@/interfaces/types";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -16,35 +18,72 @@ const Main = styled.div`
   display: flex;
   position: relative;
   background-color: ${(props) => props.theme.colors.white};
-  border-radius: ${(props) => props.theme.borderRadius.medium};
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-  border: 1px solid ${(props) => props.theme.colors.gray200};
-  width: 90%;
-  height: 90vh;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
   margin: auto auto;
   box-sizing: border-box;
 `;
 
-
 export default function Sorting() {
-  const [ values, setValues ] = useState<number[]>([]);
+  const [sortingValues, setSortingValues] = useState<SortingValue[]>([]);
 
   const reset = () => {
-    setValues([]);
-  }
+    setSortingValues([]);
+  };
+
+  const switchOrder = (sv1: SortingValue, sv2: SortingValue) => {
+    
+  };
+  const selectionSorting = () => {
+    for (let i = 0; i < sortingValues.length; i++) {
+      setTimeout(() => {
+        let minValue = Infinity;
+        let minValueIndex = 0;
+        sortingValues.map((sortingValue, index) => {
+          if (!sortingValue.sorted && sortingValue.value < minValue) {
+            minValue = sortingValue.value;
+            minValueIndex = index;
+          }
+        });
+        const copiedSortingValues = [...sortingValues];
+        copiedSortingValues.map(value => {
+          console.log(value.order);
+          if(value.order == i) value.order = copiedSortingValues[minValueIndex].order;
+        })
+        copiedSortingValues[minValueIndex].order = i;
+        copiedSortingValues[minValueIndex].sorted = true;
+        setSortingValues(values => values = [...copiedSortingValues])
+      }, i * 1000);
+    }
+  };
+
+  useEffect(() => {
+    
+  }, [sortingValues]);
   return (
     <Wrapper
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 0.3 }}>
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <Main>
-        <SortingBoard values={values}></SortingBoard>
+        <SortingBoard sortingValues={sortingValues}></SortingBoard>
         <SortingController
-          addValue={(n:number) => setValues([...values, n])}
+          addValue={(n: number) =>
+            setSortingValues([
+              ...sortingValues,
+              {
+                value: n,
+                order: sortingValues.length,
+                sorted: false,
+              },
+            ])
+          }
           reset={reset}
+          testSorting={selectionSorting}
         ></SortingController>
       </Main>
-      
     </Wrapper>
-  )
+  );
 }
