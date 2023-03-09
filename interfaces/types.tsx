@@ -29,4 +29,5 @@ export type SortingValue = {
   value: number;
   order: number;
   sorted: boolean;
+  highlighted: boolean;
 }

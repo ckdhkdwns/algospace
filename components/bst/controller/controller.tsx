@@ -6,7 +6,7 @@ import { CgRedo } from "react-icons/cg";
 import { GoCheck } from "react-icons/go";
 import { TbFileExport } from "react-icons/tb";
 import { MdAnimation } from "react-icons/md";
-import { IoPlay } from "react-icons/io5";
+
 
 const Wrapper = styled.div`
   display: flex;

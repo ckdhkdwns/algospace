@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import styled from "styled-components";
 
 const Wrapper = styled(motion.g)``;
-const Bar = styled(motion.rect)<{ width: number }>`    
+const Bar = styled(motion.rect)<{ width: number }>`
   width: ${(props) => props.width + "px"};
 `;
 
@@ -26,18 +26,23 @@ export default function ValueBar({ sortingValue, maxValue }: ValueBarProps) {
         y={35}
         initial={{ height: 0 }}
         transition={{ height: { duration: 0.4, delay: 0.4 } }}
-        animate={{ 
+        animate={{
           height: (sortingValue.value * 90) / maxValue + "%",
-          fill: (sortingValue.sorted ? "#17A590" : "#BDBDBD")
-         }}
+          fill: sortingValue.sorted
+            ? "#17A590"
+            : sortingValue.highlighted
+            ? "#F4D03F"
+            : "#BDBDBD",
+        }}
         width={SORTING_WIDTH}
-
       ></Bar>
-      <Text 
-      initial={{opacity: 0}}
-      animate={{ opacity: 1 }}
-      transition={{ opacity: {delay: 0.4}}}
-      x={SORTING_WIDTH / 2} y={-10}>
+      <Text
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ opacity: { delay: 0.4 } }}
+        x={SORTING_WIDTH / 2}
+        y={-10}
+      >
         {sortingValue.value}
       </Text>
     </Wrapper>

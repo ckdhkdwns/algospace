@@ -63,7 +63,7 @@ const Items = styled.div<{ direction: string }>`
 `;
 const Item = styled.div<{colors: Colors}>`
   position: relative;
-  font-size: 18px;
+  font-size: 16px;
   width: 100%;
   padding: 8px;
   background: ${(props) => props.theme.colors.white};

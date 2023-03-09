@@ -32,9 +32,6 @@ export default function Sorting() {
     setSortingValues([]);
   };
 
-  const switchOrder = (sv1: SortingValue, sv2: SortingValue) => {
-    
-  };
   const selectionSorting = () => {
     for (let i = 0; i < sortingValues.length; i++) {
       setTimeout(() => {
@@ -47,20 +44,24 @@ export default function Sorting() {
           }
         });
         const copiedSortingValues = [...sortingValues];
-        copiedSortingValues.map(value => {
-          console.log(value.order);
-          if(value.order == i) value.order = copiedSortingValues[minValueIndex].order;
-        })
-        copiedSortingValues[minValueIndex].order = i;
-        copiedSortingValues[minValueIndex].sorted = true;
-        setSortingValues(values => values = [...copiedSortingValues])
-      }, i * 1000);
+
+        copiedSortingValues[minValueIndex].highlighted = true;
+        setSortingValues((values) => (values = [...copiedSortingValues]));
+
+        setTimeout(() => {
+          copiedSortingValues.map((value) => {
+            if (value.order == i)
+              value.order = copiedSortingValues[minValueIndex].order;
+          });
+          copiedSortingValues[minValueIndex].order = i;
+          copiedSortingValues[minValueIndex].sorted = true;
+          setSortingValues((values) => (values = [...copiedSortingValues]));
+        }, 1000);
+      }, i * 2000); //어캐했노
     }
   };
 
-  useEffect(() => {
-    
-  }, [sortingValues]);
+  useEffect(() => {}, [sortingValues]);
   return (
     <Wrapper
       initial={{ opacity: 0 }}
@@ -77,6 +78,7 @@ export default function Sorting() {
                 value: n,
                 order: sortingValues.length,
                 sorted: false,
+                highlighted: false,
               },
             ])
           }
