@@ -6,7 +6,7 @@ import BSTBoard from "@/components/bst/board/board";
 
 import ExportModal from "@/components/bst/exportModal/exportModal";
 import useBSTGaps from "@/utils/bst/useBSTGaps";
-import useBST from "@/utils/bst/useBSTNodes";
+import useBST from "@/utils/bst/useBST";
 import useInput from "@/utils/hooks/useInput";
 import useInsertNodeAnimation from "@/utils/hooks/useInsertNodeAnimation";
 import BSTHeader from "@/components/bst/header/header";

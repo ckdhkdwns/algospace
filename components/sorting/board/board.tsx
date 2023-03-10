@@ -76,8 +76,9 @@ const Svg = styled(motion.svg)`
 
 type SortingBoardProps = {
   sortingValues: SortingValue[];
+  heightScale: number;
 };
-export default function SortingBoard({ sortingValues }: SortingBoardProps) {
+export default function SortingBoard({ sortingValues,heightScale }: SortingBoardProps) {
   const [maxValue, setMaxValue] = useState<number>(1);
   const boardRef = useRef(null);
 
@@ -113,7 +114,7 @@ export default function SortingBoard({ sortingValues }: SortingBoardProps) {
           return (
             <ValueBar
               sortingValue={sortingValue}
-              maxValue={maxValue}
+              height = {((sortingValue.value * 90) / maxValue) * heightScale + "%"}
             ></ValueBar>
           );
         })}

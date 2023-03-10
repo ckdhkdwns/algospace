@@ -2,6 +2,7 @@ import SortingBoard from "@/components/sorting/board/board";
 import SortingController from "@/components/sorting/controller/controller";
 import { SORTING_GAP, SORTING_WIDTH } from "@/interfaces/constants";
 import { SortingValue } from "@/interfaces/types";
+import useSorting from "@/utils/sorting/useSorting";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -26,42 +27,16 @@ const Main = styled.div`
 `;
 
 export default function Sorting() {
-  const [sortingValues, setSortingValues] = useState<SortingValue[]>([]);
-
-  const reset = () => {
-    setSortingValues([]);
-  };
-
-  const selectionSorting = () => {
-    for (let i = 0; i < sortingValues.length; i++) {
-      setTimeout(() => {
-        let minValue = Infinity;
-        let minValueIndex = 0;
-        sortingValues.map((sortingValue, index) => {
-          if (!sortingValue.sorted && sortingValue.value < minValue) {
-            minValue = sortingValue.value;
-            minValueIndex = index;
-          }
-        });
-        const copiedSortingValues = [...sortingValues];
-
-        copiedSortingValues[minValueIndex].highlighted = true;
-        setSortingValues((values) => (values = [...copiedSortingValues]));
-
-        setTimeout(() => {
-          copiedSortingValues.map((value) => {
-            if (value.order == i)
-              value.order = copiedSortingValues[minValueIndex].order;
-          });
-          copiedSortingValues[minValueIndex].order = i;
-          copiedSortingValues[minValueIndex].sorted = true;
-          setSortingValues((values) => (values = [...copiedSortingValues]));
-        }, 1000);
-      }, i * 2000); //어캐했노
-    }
-  };
-
-  useEffect(() => {}, [sortingValues]);
+  const {
+    sortingValues,
+    addValue,
+    reset,
+    skipBack,
+    selectionSorting,
+    insertionSorting,
+    heightScale
+  } = useSorting();
+  
   return (
     <Wrapper
       initial={{ opacity: 0 }}
@@ -69,21 +44,15 @@ export default function Sorting() {
       transition={{ duration: 0.3 }}
     >
       <Main>
-        <SortingBoard sortingValues={sortingValues}></SortingBoard>
+        <SortingBoard 
+          sortingValues={sortingValues}
+          heightScale={heightScale}></SortingBoard>
         <SortingController
-          addValue={(n: number) =>
-            setSortingValues([
-              ...sortingValues,
-              {
-                value: n,
-                order: sortingValues.length,
-                sorted: false,
-                highlighted: false,
-              },
-            ])
-          }
+          addValue={addValue}
+          skipBack={skipBack}
           reset={reset}
-          testSorting={selectionSorting}
+          selectionSorting={selectionSorting}
+          insertionSorting={insertionSorting}
         ></SortingController>
       </Main>
     </Wrapper>

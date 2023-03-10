@@ -4,7 +4,8 @@ import Dropdown from "@/components/public/dropdown";
 import { useState } from "react";
 import useInput from "@/utils/hooks/useInput";
 import { CgRedo } from "react-icons/cg";
-import { IoPlay } from "react-icons/io5";
+import { IoPlay, IoPlaySkipBack } from "react-icons/io5";
+import { MdAnimation } from "react-icons/md";
 
 const Wrapper = styled.div`
   display: flex;
@@ -81,7 +82,7 @@ const SortButton = styled(Button)`
     fill: ${(props) => props.theme.colors.green};
   }
   &:hover {
-    background: ${(props) => props.theme.colors.green};;
+    background: ${(props) => props.theme.colors.green};
     path {
       fill: #efefef;
     }
@@ -109,18 +110,54 @@ const More = styled.div`
 const Divider = styled.div`
   width: 1px;
   height: 100%;
-  background: #CFCFCF;
-`
+  background: #cfcfcf;
+`;
 
+const SkipBackButton = styled(Button)`
+  svg {
+    width: 65%;
+    height: 65%;
+    path {
+      fill: ${(props) => props.theme.colors.green};
+    }
+  }
+  &:hover {
+    background: ${(props) => props.theme.colors.green};
+    path {
+      fill: #efefef;
+    }
+  }
+`;
+
+const AnimationButton = styled(Button)`
+  svg {
+    width: 70%;
+    height: 70%;
+    path {
+      color: ${props => props.theme.colors.green};
+    }
+  }
+  &:hover {
+    background: ${(props) => props.theme.colors.green};
+    path {
+      color: #efefef;
+    }
+  }
+`;
 type SortingControllerProps = {
   addValue: Function;
   reset: Function;
-  testSorting: Function;
+  selectionSorting: Function;
+  insertionSorting: Function;
+  skipBack: Function;
+
 };
 export default function SortingController({
   addValue,
   reset,
-  testSorting,
+  selectionSorting,
+  insertionSorting,
+  skipBack
 }: SortingControllerProps) {
   const [selectedItem, setSelectedItem] = useState("Selection");
   const onInsertPress = useInput(addValue);
@@ -129,7 +166,10 @@ export default function SortingController({
     main: "#17A589",
     sub: "#48C9B01f",
   };
-
+  const onSortClick = () => {
+    if(selectedItem == "Selection") selectionSorting();
+    else if(selectedItem == "Insertion") insertionSorting();
+  }
   return (
     <Wrapper>
       <Form>
@@ -146,13 +186,19 @@ export default function SortingController({
       </Form>
       <Divider />
       <More>
-        <SortButton onClick={() => testSorting()}>
+        <SortButton onClick={onSortClick}>
           <IoPlay />
         </SortButton>
+        <SkipBackButton onClick={() => skipBack()}>
+          <IoPlaySkipBack />
+        </SkipBackButton>
         <ResetButton onClick={() => reset()}>
-          
           <CgRedo />
         </ResetButton>
+        <Divider />
+        <AnimationButton>
+          <MdAnimation />
+        </AnimationButton>
       </More>
     </Wrapper>
   );

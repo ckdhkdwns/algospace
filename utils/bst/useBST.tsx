@@ -215,7 +215,6 @@ const useBST = (boardRef: RefObject<HTMLDivElement>): BSTProps => {
     }
     // case 4: node to be removed doesn't have any children
     else {
-      console.log("Case 4");
       if (isLeftNode) copiedNodes[parentIndex].leftNode = null;
       else copiedNodes[parentIndex].rightNode = null;
     }

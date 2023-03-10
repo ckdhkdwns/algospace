@@ -1,6 +1,7 @@
 import { SORTING_GAP, SORTING_WIDTH } from "@/interfaces/constants";
 import { SortingValue } from "@/interfaces/types";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import styled from "styled-components";
 
 const Wrapper = styled(motion.g)``;
@@ -15,11 +16,14 @@ const Text = styled(motion.text)`
 
 type ValueBarProps = {
   sortingValue: SortingValue;
-  maxValue: number;
+  height: string;
 };
 
-export default function ValueBar({ sortingValue, maxValue }: ValueBarProps) {
+export default function ValueBar({ sortingValue, height }: ValueBarProps) {
   const x = sortingValue.order * (SORTING_WIDTH + SORTING_GAP);
+  useEffect(() => {
+    console.log(height);
+  })
   return (
     <Wrapper transition={{ x: { duration: 0.4 } }} animate={{ x: x }}>
       <Bar
@@ -27,7 +31,7 @@ export default function ValueBar({ sortingValue, maxValue }: ValueBarProps) {
         initial={{ height: 0 }}
         transition={{ height: { duration: 0.4, delay: 0.4 } }}
         animate={{
-          height: (sortingValue.value * 90) / maxValue + "%",
+          height: height,
           fill: sortingValue.sorted
             ? "#17A590"
             : sortingValue.highlighted

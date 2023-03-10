@@ -30,4 +30,5 @@ export type SortingValue = {
   order: number;
   sorted: boolean;
   highlighted: boolean;
+  upper: boolean;
 }
