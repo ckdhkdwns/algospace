@@ -23,18 +23,17 @@ const Board = styled.div`
   border-radius: 10px;
   position: relative;
 `;
-const Svg = styled(motion.svg) <{ maxHeight: number }>`
+const Svg = styled(motion.svg)<{ maxHeight: number }>`
   width: 100%;
-  height: ${props => props.maxHeight + "px"};
+  height: ${(props) => props.maxHeight + "px"};
 `;
 
-
 type BSTControls = {
-  circle: AnimationControls,
-  leftLine: AnimationControls,
-  rightLine: AnimationControls,
-  text: AnimationControls
-}
+  circle: AnimationControls;
+  leftLine: AnimationControls;
+  rightLine: AnimationControls;
+  text: AnimationControls;
+};
 
 type BSTBoardProps = {
   boardRef: RefObject<HTMLDivElement>;
@@ -42,17 +41,14 @@ type BSTBoardProps = {
   controls: BSTControls;
 };
 
-export default function BSTBoard({
-  boardRef,
-  nodes,
-  controls,
-}: BSTBoardProps) {
+export default function BSTBoard({ boardRef, nodes, controls }: BSTBoardProps) {
   const [maxHeight, setMaxHeight] = useState(0);
   const [XGAP, YGAP] = useGaps(boardRef);
 
-  useEffect(() => {  // svg 높이 맞춤 
+  useEffect(() => {
+    // svg 높이 맞춤
     let max = 0;
-    nodes.map(node => {
+    nodes.map((node) => {
       if (!node.removed && node.depth > max) max = node.depth;
     });
     setMaxHeight((max + 1) * YGAP);
@@ -60,39 +56,40 @@ export default function BSTBoard({
 
   return (
     <Board ref={boardRef}>
-      
-      <Svg maxHeight={maxHeight}>
-        {nodes.map((node, idx) => {
-          if (node.removed) return null;
-          return (
-            <g>
-              <LeftLine
-                nodes={nodes}
-                node={node}
+      <div>
+        <Svg maxHeight={maxHeight}>
+          {nodes.map((node, idx) => {
+            if (node.removed) return null;
+            return (
+              <g>
+                <LeftLine
+                  nodes={nodes}
+                  node={node}
+                  idx={idx}
+                  leftLineControl={controls.leftLine}
+                />
+                <RightLine
+                  nodes={nodes}
+                  node={node}
+                  idx={idx}
+                  rightLineControl={controls.rightLine}
+                />
+              </g>
+            );
+          })}
+          {nodes.map((node, idx) => {
+            if (node.removed) return null;
+            return (
+              <BSTNode
                 idx={idx}
-                leftLineControl={controls.leftLine}
-              />
-              <RightLine
-                nodes={nodes}
+                circleControl={controls.circle}
+                textControl={controls.text}
                 node={node}
-                idx={idx}
-                rightLineControl={controls.rightLine}
               />
-            </g>
-          );
-        })}
-        {nodes.map((node, idx) => {
-          if (node.removed) return null;
-          return (
-            <BSTNode
-              idx={idx}
-              circleControl={controls.circle}
-              textControl={controls.text}
-              node={node}
-            />
-          );
-        })}
-      </Svg>
+            );
+          })}
+        </Svg>
+      </div>
     </Board>
   );
 }

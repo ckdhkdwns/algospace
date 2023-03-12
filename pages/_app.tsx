@@ -6,6 +6,7 @@ import { Router } from "next/router";
 import { useEffect, useState } from "react";
 import styled, { ThemeProvider } from "styled-components";
 import { theme } from "styles/theme";
+import Head from 'next/head';
 
 const AnimationWrapper = styled(motion.div)`
   width: 100%;
@@ -35,6 +36,10 @@ export default function App({ Component, pageProps }: AppProps) {
     };
   }, []);
   return (
+    <>
+    <Head>
+      <title>Data Structure Visualizer</title>
+    </Head>
     <AnimatePresence>
       {!loading && (
         <ThemeProvider theme={theme}>
@@ -49,5 +54,7 @@ export default function App({ Component, pageProps }: AppProps) {
         </ThemeProvider>
       )}
     </AnimatePresence>
+    </>
+    
   );
 }

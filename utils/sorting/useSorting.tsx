@@ -1,5 +1,5 @@
 import { SortingValue } from "@/interfaces/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type SortingProps = {
   sortingValues: SortingValue[];
@@ -58,9 +58,71 @@ export default function useSorting(): SortingProps {
     }
   };
 
-  const insertionSorting = () => {
+  const orderToIndex = (values: SortingValue[], order: number) => {
+    let result = -1;
+    values.map((v, i) => {
+      if (order == v.order) result = i;
+    });
+    return result;
+  };
+
+  const insertionSorting = async () => {
     setHeightScale(0.5);
-  }
+
+    const compareValues = (
+      copied: SortingValue[],
+      order1: number,
+      order2: number,
+      callback: Function
+    ) => {
+      const idx1 = orderToIndex(copied, order1);
+      const idx2 = orderToIndex(copied, order2);
+
+      if (idx2 >= 0 && copied[idx1].value < copied[idx2].value) {
+        [copied[idx2].order, copied[idx1].order] = [
+          copied[idx1].order,
+          copied[idx2].order,
+        ];
+        setTimeout(() => {
+          setSortingValues((v) => (v = [...copied]));
+        }, 200);
+        
+        setTimeout(() => {
+          compareValues(copied, order1 - 1, order2 - 1, callback);
+        }, 1000);
+      } else {
+        callback();
+      }
+    };
+
+    const procedure = (order: number) => {
+      const i = orderToIndex(sortingValues, order);
+      if (i == -1) {
+        setSortingValues((values) => [
+          ...values.map((v) => {
+            v.sorted = true;
+            return v;
+          }),
+        ]);
+        return;
+      }
+      
+      const copied = [...sortingValues];
+      copied[i].upper = true;
+      copied[i].highlighted = true;
+      setSortingValues((v) => (v = copied));
+
+      const callback = () => {
+        copied[i].upper = false;
+        copied[i].highlighted = false;
+        setSortingValues((v) => (v = copied));
+        setTimeout(() => procedure(i + 1), 800);
+      };
+      setTimeout(() => compareValues(copied, i, i - 1, callback), 500);
+    };
+  
+    setTimeout(() => procedure(1), 1000);
+  };
 
   const addValue = (n: number) => {
     setSavedSortingValues([
@@ -70,7 +132,7 @@ export default function useSorting(): SortingProps {
         order: sortingValues.length,
         sorted: false,
         highlighted: false,
-        upper: false
+        upper: false,
       },
     ]);
     setSortingValues([
@@ -80,10 +142,18 @@ export default function useSorting(): SortingProps {
         order: sortingValues.length,
         sorted: false,
         highlighted: false,
-        upper: false
+        upper: false,
       },
     ]);
   };
 
-  return { sortingValues, addValue, reset, skipBack, selectionSorting, insertionSorting, heightScale };
+  return {
+    sortingValues,
+    addValue,
+    reset,
+    skipBack,
+    selectionSorting,
+    insertionSorting,
+    heightScale,
+  };
 }

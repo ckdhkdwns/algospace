@@ -21,9 +21,6 @@ type ValueBarProps = {
 
 export default function ValueBar({ sortingValue, height }: ValueBarProps) {
   const x = sortingValue.order * (SORTING_WIDTH + SORTING_GAP);
-  useEffect(() => {
-    console.log(height);
-  })
   return (
     <Wrapper transition={{ x: { duration: 0.4 } }} animate={{ x: x }}>
       <Bar
@@ -37,6 +34,7 @@ export default function ValueBar({ sortingValue, height }: ValueBarProps) {
             : sortingValue.highlighted
             ? "#F4D03F"
             : "#BDBDBD",
+          y: sortingValue.upper ? "50%" : 0
         }}
         width={SORTING_WIDTH}
       ></Bar>

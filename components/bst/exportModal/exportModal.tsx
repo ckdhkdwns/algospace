@@ -125,7 +125,8 @@ export default function ExportModal({
   const exportImage = (name: string | undefined , extension: string) => {
     if(typeof name == undefined) return;
     if(!boardRef) return; 
-    const img = boardRef.current;
+    const img = boardRef.current?.childNodes[0];
+    
     console.log(img);
     if (!img) return;
     function filter(node: any) {
