@@ -8,6 +8,7 @@ type SortingProps = {
   skipBack: Function;
   selectionSorting: Function;
   insertionSorting: Function;
+  bubbleSorting: Function;
   heightScale: number;
 };
 
@@ -86,7 +87,7 @@ export default function useSorting(): SortingProps {
         setTimeout(() => {
           setSortingValues((v) => (v = [...copied]));
         }, 200);
-        
+
         setTimeout(() => {
           compareValues(copied, order1 - 1, order2 - 1, callback);
         }, 1000);
@@ -106,7 +107,7 @@ export default function useSorting(): SortingProps {
         ]);
         return;
       }
-      
+
       const copied = [...sortingValues];
       copied[i].upper = true;
       copied[i].highlighted = true;
@@ -120,8 +121,59 @@ export default function useSorting(): SortingProps {
       };
       setTimeout(() => compareValues(copied, i, i - 1, callback), 500);
     };
-  
+
     setTimeout(() => procedure(1), 1000);
+  };
+
+  function sum(a:number, b:number) {
+    let min = Math.min(a,b); // a와 b 중 작은 값
+    let max = Math.max(a,b); // a와 b 중 큰 값
+    let sum = 0;    
+
+    for(let i=min; i<=max; i++) { // 작은 값부터 큰 값까지 
+        sum+=i; // 더하기
+    }
+    return sum;
+}
+  const bubbleSorting = async () => {
+    setHeightScale(1);
+    const copied = [...sortingValues];
+    let t = 0;
+  
+    for (let i = copied.length - 1; i >= 0; i--) {
+      for (let j = 0; j < i; j++) {
+        const time = t * 2000;
+        setTimeout(() => {
+          const curr = orderToIndex(copied, j);
+          const prev = orderToIndex(copied, j + 1);
+          copied[curr].highlighted = true;
+          copied[prev].highlighted = true;
+          setSortingValues((v) => v = [...copied]);
+
+          setTimeout(() => {
+            if (copied[curr].value > copied[prev].value) {
+              [copied[curr].order, copied[prev].order] = [
+                copied[prev].order,
+                copied[curr].order,
+              ];
+              setSortingValues((v) => v = [...copied]);
+            }
+          }, 700)
+          
+          setTimeout(() => {
+            copied[curr].highlighted = false;
+            copied[prev].highlighted = false;
+            setSortingValues((v) => v = [...copied]);
+          }, 1400)
+          
+        }, time);
+        t++;
+      }
+      setTimeout(() => {
+        copied[orderToIndex(copied, i)].sorted = true; 
+        setSortingValues(v => v = [...copied]);
+      }, (sum(copied.length - 1, i)) * 2000);
+    }
   };
 
   const addValue = (n: number) => {
@@ -154,6 +206,7 @@ export default function useSorting(): SortingProps {
     skipBack,
     selectionSorting,
     insertionSorting,
+    bubbleSorting,
     heightScale,
   };
 }

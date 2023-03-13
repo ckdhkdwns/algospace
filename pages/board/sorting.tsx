@@ -34,6 +34,7 @@ export default function Sorting() {
     skipBack,
     selectionSorting,
     insertionSorting,
+    bubbleSorting,
     heightScale
   } = useSorting();
   
@@ -53,6 +54,7 @@ export default function Sorting() {
           reset={reset}
           selectionSorting={selectionSorting}
           insertionSorting={insertionSorting}
+          bubbleSorting={bubbleSorting}
         ></SortingController>
       </Main>
     </Wrapper>

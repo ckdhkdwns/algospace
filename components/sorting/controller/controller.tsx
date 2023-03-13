@@ -149,15 +149,16 @@ type SortingControllerProps = {
   reset: Function;
   selectionSorting: Function;
   insertionSorting: Function;
+  bubbleSorting: Function;
   skipBack: Function;
-
 };
 export default function SortingController({
   addValue,
   reset,
   selectionSorting,
   insertionSorting,
-  skipBack
+  bubbleSorting,
+  skipBack,
 }: SortingControllerProps) {
   const [selectedItem, setSelectedItem] = useState("Selection");
   const onInsertPress = useInput(addValue);
@@ -169,6 +170,7 @@ export default function SortingController({
   const onSortClick = () => {
     if(selectedItem == "Selection") selectionSorting();
     else if(selectedItem == "Insertion") insertionSorting();
+    else if(selectedItem == "Bubble") bubbleSorting();
   }
   return (
     <Wrapper>
