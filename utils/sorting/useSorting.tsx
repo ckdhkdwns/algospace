@@ -12,7 +12,7 @@ type SortingProps = {
   heightScale: number;
 };
 
-export default function useSorting(): SortingProps {
+export default function useSorting(animationSpeed: number): SortingProps {
   const [sortingValues, setSortingValues] = useState<SortingValue[]>([]);
   const [savedSortingValues, setSavedSortingValues] = useState<SortingValue[]>(
     []
@@ -54,8 +54,8 @@ export default function useSorting(): SortingProps {
           copiedSortingValues[minValueIndex].order = i;
           copiedSortingValues[minValueIndex].sorted = true;
           setSortingValues((values) => (values = [...copiedSortingValues]));
-        }, 1000);
-      }, i * 2000); //어캐했노
+        }, animationSpeed);
+      }, i * 2 * animationSpeed); //어캐했노
     }
   };
 
@@ -86,11 +86,11 @@ export default function useSorting(): SortingProps {
         ];
         setTimeout(() => {
           setSortingValues((v) => (v = [...copied]));
-        }, 200);
+        }, animationSpeed / 5);
 
         setTimeout(() => {
           compareValues(copied, order1 - 1, order2 - 1, callback);
-        }, 1000);
+        }, animationSpeed);
       } else {
         callback();
       }
@@ -117,12 +117,12 @@ export default function useSorting(): SortingProps {
         copied[i].upper = false;
         copied[i].highlighted = false;
         setSortingValues((v) => (v = copied));
-        setTimeout(() => procedure(i + 1), 800);
+        setTimeout(() => procedure(i + 1), animationSpeed * 4/5);
       };
-      setTimeout(() => compareValues(copied, i, i - 1, callback), 500);
+      setTimeout(() => compareValues(copied, i, i - 1, callback), animationSpeed/2);
     };
 
-    setTimeout(() => procedure(1), 1000);
+    setTimeout(() => procedure(1), animationSpeed);
   };
 
   function sum(a:number, b:number) {
@@ -158,13 +158,13 @@ export default function useSorting(): SortingProps {
               ];
               setSortingValues((v) => v = [...copied]);
             }
-          }, 700)
+          }, animationSpeed * 7 / 10)
           
           setTimeout(() => {
             copied[curr].highlighted = false;
             copied[prev].highlighted = false;
             setSortingValues((v) => v = [...copied]);
-          }, 1400)
+          }, animationSpeed * 14 / 10)
           
         }, time);
         t++;
@@ -172,7 +172,7 @@ export default function useSorting(): SortingProps {
       setTimeout(() => {
         copied[orderToIndex(copied, i)].sorted = true; 
         setSortingValues(v => v = [...copied]);
-      }, (sum(copied.length - 1, i)) * 2000);
+      }, (sum(copied.length - 1, i)) * animationSpeed * 2);
     }
   };
 

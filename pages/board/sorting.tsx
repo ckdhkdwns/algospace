@@ -1,10 +1,8 @@
 import SortingBoard from "@/components/sorting/board/board";
 import SortingController from "@/components/sorting/controller/controller";
-import { SORTING_GAP, SORTING_WIDTH } from "@/interfaces/constants";
-import { SortingValue } from "@/interfaces/types";
 import useSorting from "@/utils/sorting/useSorting";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 
 const Wrapper = styled(motion.div)`
@@ -27,6 +25,7 @@ const Main = styled.div`
 `;
 
 export default function Sorting() {
+  const [animationSpeed, setAnimationSpeed] = useState(1000);
   const {
     sortingValues,
     addValue,
@@ -36,7 +35,7 @@ export default function Sorting() {
     insertionSorting,
     bubbleSorting,
     heightScale
-  } = useSorting();
+  } = useSorting(animationSpeed);
   
   return (
     <Wrapper
@@ -55,6 +54,9 @@ export default function Sorting() {
           selectionSorting={selectionSorting}
           insertionSorting={insertionSorting}
           bubbleSorting={bubbleSorting}
+
+          animationSpeed={animationSpeed}
+          setAnimationSpeed={setAnimationSpeed}
         ></SortingController>
       </Main>
     </Wrapper>
