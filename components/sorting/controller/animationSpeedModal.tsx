@@ -1,40 +1,42 @@
-import useModal from "@/utils/hooks/useModal";
+import useModal from "@/hooks/useModal";
 import { Slider } from "@mui/material";
 import { RefObject, useEffect, useState } from "react";
 import styled from "styled-components";
 
 const Wrapper = styled.div<{ isModalOpen: boolean }>`
-    display: ${props => props.isModalOpen ? "block" : "none"};
-    width: 400px;
-    height: 80px;
+    display: ${props => props.isModalOpen ? "flex" : "none"};
+    flex-direction: column;
+    width: 300px;
+    
     background: ${props => props.theme.colors.white};
     position: absolute;
     bottom: 60px;
     border: 1px solid #dadada;
-    padding: 20px 30px;
+    padding: 15px 30px 10px;
     box-sizing: border-box;
     border-radius: 10px;
+    gap: 10px;
     left: 50%;
     transform: translate(-50%, 0);
 `;
 
 const iOSBoxShadow =
-  '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
+  '0px';
 
 const IOSSlider = styled(Slider)(({ theme }) => ({
     color: theme.colors.green,
     height: 2,
     padding: '15px 0',
     '& .MuiSlider-thumb': {
-      height: 28,
-      width: 28,
+      height: 24,
+      width: 24,
       backgroundColor: '#fff',
       boxShadow: iOSBoxShadow,
       border: "2px solid",
       borderColor: theme.colors.green,
       '&:focus, &:hover, &.Mui-active': {
         boxShadow:
-          '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.3),0 0 0 1px rgba(0,0,0,0.02)',
+          'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
         // Reset on touch devices, it doesn't add specificity
         '@media (hover: none)': {
           boxShadow: iOSBoxShadow,
@@ -73,6 +75,10 @@ const IOSSlider = styled(Slider)(({ theme }) => ({
     },
   }));
   
+  const Title = styled.div`
+    font-size: 15px;
+    color: #6f6f6f;
+  `
 type AnimationSpeedModalProps = {
   isModalOpen: boolean,
   setIsModalOpen: Function,
@@ -120,10 +126,6 @@ export default function AnimationSpeedModal({
   setAnimationSpeed
 }: AnimationSpeedModalProps) {
   const modalRef = useModal(setIsModalOpen, buttonRef);
-  const [speed, setSpeed] = useState<number>(1000);
-  useEffect(() => {
-    console.log(animationSpeed);
-  }, [animationSpeed])
 
   const handleChange = (e:any, v:any) => {
     setAnimationSpeed(1000000 / ((2 ** v) * 125) || 1000);

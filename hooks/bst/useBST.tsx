@@ -1,6 +1,6 @@
 import { RefObject, useEffect, useState } from "react";
 import { Node, Position } from "interfaces/types";
-import { getNodePosition } from "./getNodePosition";
+import { getNodePosition } from "../../utils/bst/getNodePosition";
 import { NonEmptyArray } from "@/interfaces/interfaces";
 
 type BSTProps = {
@@ -12,6 +12,10 @@ type BSTProps = {
   insertPath: number[];
   resetInsertPath: Function;
 };
+
+function isNonEmpty<T>(arr: Array<T>): arr is NonEmptyArray<T> {
+  return arr.length > 0;
+}
 
 const useBST = (boardRef: RefObject<HTMLDivElement>): BSTProps => {
   const [rootNode, setRootNode] = useState<number>(0);
@@ -116,10 +120,6 @@ const useBST = (boardRef: RefObject<HTMLDivElement>): BSTProps => {
     if (nodes.length !== 0) recursion(rootNode, []);
     setNodes([...copiedNodes]);
   };
-
-  function isNonEmpty<T>(arr: Array<T>): arr is NonEmptyArray<T> {
-    return arr.length > 0;
-  }
 
   const getRemoveIndex = (value: number, index: number) => {
     let result = -1;

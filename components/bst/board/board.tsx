@@ -10,10 +10,7 @@ import { Node } from "interfaces/types";
 import LeftLine from "./elements/leftLine";
 import RightLine from "./elements/rightLine";
 import BSTNode from "./elements/node";
-import useGaps from "@/utils/bst/useBSTGaps";
-import { debounce } from "@mui/material";
-import Image from "next/image";
-import Router from "next/router";
+import useGaps from "@/hooks/bst/useBSTGaps";
 
 const Board = styled.div`
   display: flex;

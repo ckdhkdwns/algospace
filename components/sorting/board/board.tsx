@@ -22,51 +22,6 @@ const Board = styled.div`
   position: relative;
 `;
 
-const Header = styled.div`
-  display: flex;
-  width: fit-content;
-  font-size: 20px;
-  font-weight: 600;
-  margin: 10px 25px;
-  gap: 10px;
-  color: ${(props) => props.theme.colors.black};
-
-  img {
-    margin: 10px auto;
-  }
-`;
-
-const BackButton = styled.button`
-  all: unset;
-  width: 30px;
-  height: 30px;
-  margin: auto auto;
-  display: flex;
-  border-radius: 10px;
-  transition: 0.2s all;
-  svg {
-    margin: auto auto;
-  }
-  &:hover {
-    background: ${props => props.theme.colors.gray100}
-  }
-`
-
-const ImageWrapper = styled.div`
-  width: 45px;
-  height: 45px;
-  display: flex;
-  border-radius: 10px;
-  margin: auto 0;
-  img {
-    margin: auto auto;
-  }
-
-`
-const Title = styled.div`
-  line-height: 60px;
-  font-size: 30px;
-`;
 const Svg = styled(motion.svg)`
   width: auto;
   height: 80%;
@@ -96,14 +51,6 @@ export default function SortingBoard({ sortingValues,heightScale }: SortingBoard
 
   return (
     <Board>
-      <Header>
-        <BackButton onClick={() => Router.push("/")}> <MdArrowBackIosNew /></BackButton>
-        <ImageWrapper >
-          <Image src="/sorting-mini.svg" alt="sorting" width="35" height="35" />
-        </ImageWrapper>
-
-        <Title>Sorting</Title>
-      </Header>
       <Svg
         transition={{ duration: 0.2 }}
         initial={{ width: svgWidth }}

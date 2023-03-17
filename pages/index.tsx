@@ -2,29 +2,36 @@ import styles from "@/styles/Home.module.css";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import LinkBtn from "@/components/index/linkBtn";
+import Image from "next/image";
 
 const Wrapper = styled(motion.div)`
   margin: 0px auto;
-  padding-top: 30vh;
+  padding-top: 15vh;
   display: flex;
   flex-direction: column;
   width: 80%;
   height: 100vh;
   box-sizing: border-box;
 `;
-const Header = styled.div``;
+const Header = styled.div`
+  margin: 0 auto 10vh;
+`;
+
+const Title = styled.div`
+  display: flex;
+  gap: 15px;
+`
 const Subtitle = styled(motion.div)`
   width: 100%;
   font-weight: 400;
   font-size: 16px;
   color: #7c7c7c;
-  text-align: center;
-  transform: translateY(-10px);
+  margin: 8px 0 0 70px;
 `;
 const Body = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  margin-top: 17px;
+  margin-top: 30px;
   height: fit-content;
 `;
 const Items = styled.div`
@@ -33,14 +40,19 @@ const Items = styled.div`
   justify-content: center;
 `;
 
+const Name = styled.div`
+  font-size: 50px;
+  color: #202020;
+  font-weight: 500;
+  line-height: 50px;
+`;
+
 export default function Home() {
   const items = [
     {
       title: "Binary Search Tree",
       destinationLink: "/board/binary-search-tree",
       imagePath: "/bst-mini.svg",
-      description:
-        "Tree structure with nodes having at most two children, where left subtree is smaller and right subtree is larger, for efficient data manipulation.",
       backgroundColor: "#5dade272",
       imageSize: {
         width: 133,
@@ -51,8 +63,6 @@ export default function Home() {
       title: "Sorting",
       destinationLink: "/board/sorting",
       imagePath: "/sorting-mini.svg",
-      description:
-        "Process of arranging a collection of items in a specific order. The goal is to arrange the items in ascending or descending order based on a specific criterion.",
       backgroundColor: "#48c9b072",
       imageSize: {
         width: 110,
@@ -63,8 +73,6 @@ export default function Home() {
       title: "Graph Traversal",
       destinationLink: "/board/graph-traversal",
       imagePath: "/graph-mini.svg",
-      description:
-        "Process of systematically visiting every vertex and edge in a graph using algorithms like DFS or BFS, to analyze and understand the relationships between them. ",
       backgroundColor: "#F1948Aaf",
       imageSize: {
         width: 136,
@@ -79,14 +87,14 @@ export default function Home() {
       exit={{ opacity: 0 }}
     >
       <Header>
-        <Subtitle
+        <Title>
+          <Image width="50" height="50" src="/logo.svg" alt="logo"/>
+          <Name>AlgoSpace</Name>
           
-        >
-          Select structure to visualize
-        </Subtitle>
+        </Title>
+        <Subtitle>Visualize algorithms & data structures</Subtitle>
       </Header>
-      <Body
-      >
+      <Body>
         <Items>
           {items.map((item) => {
             return <LinkBtn {...item} />;

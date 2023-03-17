@@ -38,7 +38,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
     <Head>
-      <title>Data Structure Visualizer</title>
+      <title>AlgoSpace</title>
     </Head>
     <AnimatePresence>
       {!loading && (

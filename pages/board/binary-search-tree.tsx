@@ -5,10 +5,10 @@ import BSTController from "@/components/bst/controller/controller";
 import BSTBoard from "@/components/bst/board/board";
 
 import ExportModal from "@/components/bst/exportModal/exportModal";
-import useBSTGaps from "@/utils/bst/useBSTGaps";
-import useBST from "@/utils/bst/useBST";
-import useInput from "@/utils/hooks/useInput";
-import useInsertNodeAnimation from "@/utils/bst/useInsertNodeAnimation";
+import useBSTGaps from "@/hooks/bst/useBSTGaps";
+import useBST from "@/hooks/bst/useBST";
+import useInput from "@/hooks/useInput";
+import useInsertNodeAnimation from "@/hooks/bst/useInsertNodeAnimation";
 import BSTHeader from "@/components/bst/header/header";
 
 const Wrapper = styled(motion.div)`
@@ -72,7 +72,6 @@ export default function BinarySearchTree() {
   useEffect(() => {
     if (nodes.length == 0) return;
     animateInsert(nodes[nodes.length - 1]);
-    console.log(nodes);
   }, [nodes]);
 
   return (

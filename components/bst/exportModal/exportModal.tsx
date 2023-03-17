@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import Dropdown from "@/components/public/dropdown";
 import { TbFileExport } from "react-icons/tb";
-import useModal from "@/utils/hooks/useModal";
+import useModal from "@/hooks/useModal";
 import exportImage from "@/utils/bst/exportImage";
 
 const Wrapper = styled.div<{ isModalOpen: boolean }>`

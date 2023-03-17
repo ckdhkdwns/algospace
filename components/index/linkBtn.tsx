@@ -76,7 +76,6 @@ type LinkBtnProps = {
   title: string;
   destinationLink: string;
   imagePath: string;
-  description: string;
   backgroundColor: string;
   imageSize: {
     width: number;
@@ -88,7 +87,6 @@ export default function LinkBtn({
   title,
   destinationLink,
   imagePath,
-  description,
   backgroundColor,
   imageSize,
 }: LinkBtnProps) {

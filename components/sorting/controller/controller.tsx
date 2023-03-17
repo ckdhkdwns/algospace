@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Image from "next/image";
 import Dropdown from "@/components/public/dropdown";
 import { useRef, useState } from "react";
-import useInput from "@/utils/hooks/useInput";
+import useInput from "@/hooks/useInput";
 import { CgRedo } from "react-icons/cg";
 import { IoPlay, IoPlaySkipBack } from "react-icons/io5";
 import { MdAnimation } from "react-icons/md";
@@ -97,11 +97,6 @@ const SelectType = styled.div`
   flex-direction: column;
   width: 150px;
 `;
-const Form = styled.div`
-  display: flex;
-  gap: 10px;
-  width: 100%;
-`;
 
 const More = styled.div`
   display: flex;
@@ -111,7 +106,7 @@ const More = styled.div`
 const Divider = styled.div`
   width: 1px;
   height: 100%;
-  background: #cfcfcf;
+  background: #dadada;
 `;
 
 const SkipBackButton = styled(Button)`
@@ -136,7 +131,7 @@ const AnimationButton = styled(Button)`
     width: 70%;
     height: 70%;
     path {
-      color: ${props => props.theme.colors.green};
+      color: ${(props) => props.theme.colors.green};
     }
   }
   &:hover {
@@ -149,13 +144,14 @@ const AnimationButton = styled(Button)`
 
 const AnimationSetting = styled.div`
   position: relative;
-`
+`;
 type SortingControllerProps = {
   addValue: Function;
   reset: Function;
-  selectionSorting: Function;
-  insertionSorting: Function;
-  bubbleSorting: Function;
+  selectionSort: Function;
+  insertionSort: Function;
+  bubbleSort: Function;
+  quickSort: Function;
   skipBack: Function;
   animationSpeed: number;
   setAnimationSpeed: Function;
@@ -163,41 +159,42 @@ type SortingControllerProps = {
 export default function SortingController({
   addValue,
   reset,
-  selectionSorting,
-  insertionSorting,
-  bubbleSorting,
+  selectionSort,
+  insertionSort,
+  bubbleSort,
   skipBack,
+  quickSort,
   animationSpeed,
-  setAnimationSpeed
+  setAnimationSpeed,
 }: SortingControllerProps) {
   const [selectedItem, setSelectedItem] = useState("Selection");
   const [isSpeedSettingOpen, setIsSpeedSettingOpen] = useState(false);
   const buttonRef = useRef(null);
   const onInsertPress = useInput(addValue);
-  const items = ["Selection", "Insertion", "Bubble", "Merge", "Heap"];
+  const items = ["Selection", "Insertion", "Bubble", "Quick", "Merge"];
   const colors = {
     main: "#17A589",
     sub: "#48C9B01f",
   };
   const onSortClick = () => {
-    if(selectedItem == "Selection") selectionSorting();
-    else if(selectedItem == "Insertion") insertionSorting();
-    else if(selectedItem == "Bubble") bubbleSorting();
-  }
+    if (selectedItem == "Selection") selectionSort();
+    else if (selectedItem == "Insertion") insertionSort();
+    else if (selectedItem == "Bubble") bubbleSort();
+    else if (selectedItem == "Quick") quickSort();
+  };
   return (
     <Wrapper>
-      <Form>
-        <InsertInput placeholder="Insert" onKeyPress={onInsertPress} />
-        <SelectType>
-          <Dropdown
-            colors={colors}
-            selectedItem={selectedItem}
-            setSelectedItem={setSelectedItem}
-            items={items}
-            direction="up"
-          />
-        </SelectType>
-      </Form>
+      <InsertInput placeholder="Insert" onKeyPress={onInsertPress} />
+      <Divider />
+      <SelectType>
+        <Dropdown
+          colors={colors}
+          selectedItem={selectedItem}
+          setSelectedItem={setSelectedItem}
+          items={items}
+          direction="up"
+        />
+      </SelectType>
       <Divider />
       <More>
         <SortButton onClick={onSortClick}>
@@ -211,19 +208,23 @@ export default function SortingController({
         </ResetButton>
         <Divider />
         <AnimationSetting>
-          <AnimationButton ref={buttonRef} onClick={() => { setIsSpeedSettingOpen(!isSpeedSettingOpen) }}>
+          <AnimationButton
+            ref={buttonRef}
+            onClick={() => {
+              setIsSpeedSettingOpen(!isSpeedSettingOpen);
+            }}
+          >
             <MdAnimation />
           </AnimationButton>
-          <AnimationSpeed 
+          <AnimationSpeed
             isModalOpen={isSpeedSettingOpen}
             setIsModalOpen={setIsSpeedSettingOpen}
             buttonRef={buttonRef}
             animationSpeed={animationSpeed}
             setAnimationSpeed={setAnimationSpeed}
           />
-        </AnimationSetting>  
+        </AnimationSetting>
       </More>
-      
     </Wrapper>
   );
 }
