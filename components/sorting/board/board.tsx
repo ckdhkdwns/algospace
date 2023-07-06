@@ -9,9 +9,6 @@ import { Ref, RefObject, useEffect, useRef, useState } from "react";
 import { Node, SortingValue } from "interfaces/types";
 import ValueBar from "./elements/valueBar";
 import { SORTING_GAP, SORTING_WIDTH } from "@/interfaces/constants";
-import Router from "next/router";
-import Image from "next/image";
-import { MdArrowBackIosNew } from "react-icons/md";
 
 const Board = styled.div`
   display: flex;
@@ -20,6 +17,7 @@ const Board = styled.div`
   flex-direction: column;
   border-radius: 10px;
   position: relative;
+  
 `;
 
 const Svg = styled(motion.svg)`

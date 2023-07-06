@@ -18,17 +18,39 @@ const Wrapper = styled(motion.div)`
   box-sizing: border-box;
   height: 100vh;
   flex-direction: column;
-`;
-
-const Main = styled.div`
-  display: flex;
-  position: relative;
-  background-color: ${(props) => props.theme.colors.white};
-  flex-direction: column;
-  width: 100%;
-  height: 100vh;
-  margin: auto auto;
-  box-sizing: border-box;
+  background-color: #fdfdfd;
+  background-image: linear-gradient(
+      90deg,
+      #efefef 0px,
+      #efefef 1px,
+      transparent 1px,
+      transparent 99px,
+      transparent 100px
+    ),
+    linear-gradient(
+      #efefef,
+      0px,
+      #efefef 1px,
+      transparent 1px,
+      transparent 99px,
+      transparent 100px
+    ),
+    linear-gradient(
+      #efefef 0px,
+      #efefef 1px,
+      transparent 1px,
+      transparent 99px,
+      transparent 100px
+    ),
+    linear-gradient(
+      90deg,
+      #efefef 0px,
+      #efefef 1px,
+      transparent 1px,
+      transparent 99px,
+      transparent 100px
+    );
+  background-size: 20px 100%, 100% 20px, 100% 20px, 20px 100%;
 `;
 
 export default function BinarySearchTree() {
@@ -36,6 +58,7 @@ export default function BinarySearchTree() {
 
   const {
     nodes,
+    nodeChanges,
     insertNode,
     removeNode,
     resetNodes,
@@ -46,7 +69,7 @@ export default function BinarySearchTree() {
   const [XGAP, YGAP] = useBSTGaps(boardRef);
 
   const [isAnimating, setIsAnimating] = useState(false);
-  const [isAnimationActive, setIsAnimationActive] = useState(true);
+  const [isAnimationActive, setIsAnimationActive] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const controls = {
@@ -64,7 +87,7 @@ export default function BinarySearchTree() {
 
   const onInsertInputPress = useInput(insertNode);
   const onRemoveInputPress = useInput(removeNode);
-
+~
   useEffect(() => {
     if (nodes.length !== 0) replaceNodes(nodes);
   }, [XGAP, YGAP]);
@@ -72,7 +95,9 @@ export default function BinarySearchTree() {
   useEffect(() => {
     if (nodes.length == 0) return;
     animateInsert(nodes[nodes.length - 1]);
+
   }, [nodes]);
+
 
   return (
     <Wrapper

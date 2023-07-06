@@ -22,7 +22,14 @@ export default function RightLine({ nodes, node, idx, rightLineControl }:RightLi
       x2={nodes[node.rightNode].position.left}
       y2={nodes[node.rightNode].position.top}
       initial={{ stroke: BST_STROKE_COLOR, pathLength: 0 }}
-      animate={rightLineControl}
+      animate={{
+        x1: node.position.left,
+        y1: node.position.top,
+        x2: nodes[node.rightNode].position.left,
+        y2: nodes[node.rightNode].position.top,
+        pathLength: 1,
+        stroke: '#000000',
+      }}
       custom={idx}
       transition={{ duration: 0.5, stroke: { delay: 1, duration: 0.5 } }}
     />

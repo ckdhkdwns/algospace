@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import {
+  AnimatePresence,
   AnimationControls,
   motion,
   useAnimation,
@@ -11,6 +12,8 @@ import LeftLine from "./elements/leftLine";
 import RightLine from "./elements/rightLine";
 import BSTNode from "./elements/node";
 import useGaps from "@/hooks/bst/useBSTGaps";
+
+import * as d3 from "d3";
 
 const Board = styled.div`
   display: flex;
@@ -55,25 +58,31 @@ export default function BSTBoard({ boardRef, nodes, controls }: BSTBoardProps) {
     <Board ref={boardRef}>
       <div>
         <Svg maxHeight={maxHeight}>
-          {nodes.map((node, idx) => {
-            if (node.removed) return null;
-            return (
+          {nodes.map((node, idx) => (
               <g>
-                <LeftLine
-                  nodes={nodes}
-                  node={node}
-                  idx={idx}
-                  leftLineControl={controls.leftLine}
-                />
-                <RightLine
-                  nodes={nodes}
-                  node={node}
-                  idx={idx}
-                  rightLineControl={controls.rightLine}
-                />
+                {!node.removed && (
+                  <AnimatePresence>
+                    <LeftLine
+                      nodes={nodes}
+                      node={node}
+                      idx={idx}
+                      leftLineControl={controls.leftLine}
+                    />
+                  </AnimatePresence>
+                )}
+                {!node.removed && (
+                  <AnimatePresence>
+                    <RightLine
+                      nodes={nodes}
+                      node={node}
+                      idx={idx}
+                      rightLineControl={controls.rightLine}
+                    />
+                  </AnimatePresence>
+                )}
               </g>
-            );
-          })}
+          ))}
+
           {nodes.map((node, idx) => {
             if (node.removed) return null;
             return (

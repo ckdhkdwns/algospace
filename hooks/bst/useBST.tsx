@@ -11,6 +11,7 @@ type BSTProps = {
   replaceNodes: Function;
   insertPath: number[];
   resetInsertPath: Function;
+  nodeChanges: Boolean
 };
 
 function isNonEmpty<T>(arr: Array<T>): arr is NonEmptyArray<T> {
@@ -21,12 +22,27 @@ const useBST = (boardRef: RefObject<HTMLDivElement>): BSTProps => {
   const [rootNode, setRootNode] = useState<number>(0);
   const [nodes, setNodes] = useState<Node[]>([]);
   const [insertPath, setInsertPath] = useState([rootNode]);
-
+  const [nodeChanges, setNodeChanges] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   type appendChildProps = {
     parentNode: number;
     value: number;
     position: Position;
   };
+
+  // 초기 노드들을 랜덤으로 생성 
+  useEffect(() => {
+    if(!isInitializing || nodes.length >= 10) {
+      setIsInitializing(false);
+      return
+    }
+    insertNode(Math.floor(Math.random()* 100) + 1);
+  }, [nodes]);
+
+  useEffect(() => {
+    if(!isInitializing) replaceNodes(nodes);
+  }, [isInitializing])
+  // 여기까지
 
   const appendChild = ({ parentNode, value, position }: appendChildProps) => {
     setNodes([
@@ -105,6 +121,7 @@ const useBST = (boardRef: RefObject<HTMLDivElement>): BSTProps => {
   };
 
   const replaceNodes = (nodes: Node[]) => {
+    if(isInitializing) return;
     const copiedNodes = [...nodes];
     const recursion = (index: number | null, directions: string[]) => {
       if (index == null) return;
@@ -237,7 +254,8 @@ const useBST = (boardRef: RefObject<HTMLDivElement>): BSTProps => {
     resetNodes,
     replaceNodes,
     insertPath,
-    resetInsertPath
+    resetInsertPath,
+    nodeChanges
   };
 };
 

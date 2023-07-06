@@ -17,34 +17,48 @@ const Text = styled(motion.text)`
 `;
 
 type BSTNodeProps = {
-    idx: number;
-    circleControl: AnimationControls;
-    textControl: AnimationControls;
-    node: Node;
-}
-export default function BSTNode({ idx, circleControl, textControl, node } : BSTNodeProps) {
-    return (<g>
-        <Circle
-          custom={idx}
-          initial={{ stroke: BST_STROKE_COLOR }}
-          animate={circleControl}
-          transition={{
-            duration: 0.5,
-            stroke: { delay: 1, duration: 0.5 },
-          }}
-          r="21"
-        />
-        <Text
-          initial={{ opacity: 0 }}
-          custom={idx}
-          animate={textControl}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          id={"text" + idx}
-          x={node.position.left}
-          y={node.position.top + 2}
-        >
-          {node.value}
-        </Text>
-      </g>
-      )
+  idx: number;
+  circleControl: AnimationControls;
+  textControl: AnimationControls;
+  node: Node;
+};
+export default function BSTNode({
+  idx,
+  circleControl,
+  textControl,
+  node,
+}: BSTNodeProps) {
+  return (
+    <g>
+      <Circle
+        custom={idx}
+        initial={{ stroke: BST_STROKE_COLOR }}
+        cx={node.position.left}
+        cy={node.position.top}
+        animate={{
+          cx: node.position.left,
+          cy: node.position.top,
+          stroke: '#000000'
+        }}
+        transition={{
+          duration: 0.5,
+          stroke: { delay: 1, duration: 0.5 },
+        }}
+        r="21"
+      />
+      <Text
+        initial={{ opacity: 0 }}
+        custom={idx}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        id={"text" + idx}
+        x={node.position.left}
+        y={node.position.top + 2}
+        animate={{
+          opacity: 1,
+        }}
+      >
+        {node.value}
+      </Text>
+    </g>
+  );
 }

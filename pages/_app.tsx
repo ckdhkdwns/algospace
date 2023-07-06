@@ -6,12 +6,12 @@ import { Router } from "next/router";
 import { useEffect, useState } from "react";
 import styled, { ThemeProvider } from "styled-components";
 import { theme } from "styles/theme";
-import Head from 'next/head';
+import Head from "next/head";
 
 const AnimationWrapper = styled(motion.div)`
   width: 100%;
   height: 100%;
-`
+`;
 export default function App({ Component, pageProps }: AppProps) {
   const [loading, setLoading] = useState(false);
 
@@ -37,24 +37,12 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
   return (
     <>
-    <Head>
-      <title>AlgoSpace</title>
-    </Head>
-    <AnimatePresence>
-      {!loading && (
-        <ThemeProvider theme={theme}>
-          <AnimationWrapper
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Component {...pageProps} />
-          </AnimationWrapper>
-        </ThemeProvider>
-      )}
-    </AnimatePresence>
+      <Head>
+        <title>AlgoSpace</title>
+      </Head>
+      <ThemeProvider theme={theme}>
+        <Component {...pageProps} />
+      </ThemeProvider>
     </>
-    
   );
 }
