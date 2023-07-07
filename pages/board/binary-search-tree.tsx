@@ -95,7 +95,6 @@ export default function BinarySearchTree() {
   useEffect(() => {
     if (nodes.length == 0) return;
     animateInsert(nodes[nodes.length - 1]);
-
   }, [nodes]);
 
 

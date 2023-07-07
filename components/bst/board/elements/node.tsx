@@ -35,11 +35,7 @@ export default function BSTNode({
         initial={{ stroke: BST_STROKE_COLOR }}
         cx={node.position.left}
         cy={node.position.top}
-        animate={{
-          cx: node.position.left,
-          cy: node.position.top,
-          stroke: '#000000'
-        }}
+        animate={circleControl}
         transition={{
           duration: 0.5,
           stroke: { delay: 1, duration: 0.5 },
@@ -53,9 +49,7 @@ export default function BSTNode({
         id={"text" + idx}
         x={node.position.left}
         y={node.position.top + 2}
-        animate={{
-          opacity: 1,
-        }}
+        animate={textControl}
       >
         {node.value}
       </Text>
